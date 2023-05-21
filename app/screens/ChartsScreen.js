@@ -9,9 +9,7 @@ export default function ChartScreen() {
                 dataset={[5, 10, 50, 20, 30, 10, 10, 10, 10, 10, 10]}
                 title={"1 rep Bench"}
             />
-            <View style={styles.menubar}>
-                <MenuBar />
-            </View>
+            <MenuBar />
         </SafeAreaView>
     );
 }
@@ -21,11 +19,5 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#fff",
         alignItems: "center",
-    },
-    menubar: {
-        height: "13%",
-        width: "100%",
-        position: "absolute",
-        bottom: 0,
     },
 });

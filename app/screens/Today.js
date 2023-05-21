@@ -5,7 +5,7 @@ import {
     TextInput,
     View,
     TouchableHighlight,
-    ScrollView,
+    Keyboard,
 } from "react-native";
 import { useState } from "react";
 import MenuBar from "../components/MenuBar";
@@ -34,65 +34,68 @@ export default function Today() {
             setOpen(false);
         }
     };
+    const dismissKeyboard = () => {
+        Keyboard.dismiss();
+        return false;
+    };
 
     return (
-        <ScrollView keyboardShouldPersistTaps="handled">
-            <SafeAreaView style={styles.background}>
-                <Text> ADVANCE </Text>
-                <View style={styles.new}>
-                    <View style={styles.inputs}>
-                        <DropDownPicker
-                            open={open}
-                            value={value}
-                            items={items}
-                            setOpen={setOpen}
-                            setValue={setValue}
-                            setItems={setItems}
-                            containerStyle={{
-                                width: "90%",
-                                height: 60,
-                                top: 5,
-                                margin: 0,
-                            }}
-                        />
-                        <Text>Excercise</Text>
-                    </View>
-                    <View style={styles.inputs}>
-                        <TextInput
-                            style={styles.inputBox}
-                            onChangeText={onChangeWeight}
-                            value={weight}
-                            placeholder="0lbs"
-                            keyboardType="numeric"
-                        />
-                        <Text>Weight</Text>
-                    </View>
-                    <View style={styles.inputs}>
-                        <TextInput
-                            style={styles.inputBox}
-                            onChangeText={onChangeReps}
-                            value={reps}
-                            placeholder="0"
-                            keyboardType="numeric"
-                        />
-                        <Text>Reps</Text>
-                    </View>
+        <SafeAreaView
+            style={styles.background}
+            onStartShouldSetResponder={dismissKeyboard}
+        >
+            <Text> ADVANCE </Text>
+            <View style={styles.new}>
+                <View style={styles.inputs}>
+                    <DropDownPicker
+                        open={open}
+                        value={value}
+                        items={items}
+                        setOpen={setOpen}
+                        setValue={setValue}
+                        setItems={setItems}
+                        containerStyle={{
+                            width: "90%",
+                            height: 60,
+                            top: 5,
+                            margin: 0,
+                        }}
+                    />
+                    <Text>Excercise</Text>
                 </View>
-                <TouchableHighlight
-                    onPress={() => handleSubmit(value, weight, reps)}
-                >
-                    <View style={styles.button}>
-                        <Text style={styles.buttonText}>Submit</Text>
-                    </View>
-                </TouchableHighlight>
-                <View style={styles.table}>
-                    <Table data={tracked} />
+                <View style={styles.inputs}>
+                    <TextInput
+                        style={styles.inputBox}
+                        onChangeText={onChangeReps}
+                        value={reps}
+                        placeholder="0"
+                        keyboardType="numeric"
+                    />
+                    <Text>Reps</Text>
                 </View>
-                <View style={styles.menubar}>
-                    <MenuBar />
+                <View style={styles.inputs}>
+                    <TextInput
+                        style={styles.inputBox}
+                        onChangeText={onChangeWeight}
+                        value={weight}
+                        placeholder="0lbs"
+                        keyboardType="numeric"
+                    />
+                    <Text>Weight</Text>
                 </View>
-            </SafeAreaView>
-        </ScrollView>
+            </View>
+            <TouchableHighlight
+                onPress={() => handleSubmit(value, weight, reps)}
+            >
+                <View style={styles.button}>
+                    <Text style={styles.buttonText}>Submit</Text>
+                </View>
+            </TouchableHighlight>
+            <View style={styles.table}>
+                <Table data={tracked} />
+            </View>
+            <MenuBar />
+        </SafeAreaView>
     );
 }
 
@@ -100,6 +103,7 @@ const styles = StyleSheet.create({
     background: {
         flex: 1,
         width: "100%",
+        height: "100%",
         alignItems: "center",
         backgroundColor: "#fff",
     },
@@ -139,13 +143,7 @@ const styles = StyleSheet.create({
         color: "white",
     },
     table: {
-        height: 499,
+        height: 500,
         width: "100%",
-    },
-    menubar: {
-        bottom: -140,
-        position: "absolute",
-        width: "100%",
-        height: "16%",
     },
 });

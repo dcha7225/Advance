@@ -40,7 +40,9 @@ export default function MenuBar() {
 const styles = StyleSheet.create({
     menubar: {
         width: "100%",
-        height: "100%",
+        height: "13%",
+        position: "absolute",
+        bottom: 0,
         flexDirection: "row",
         borderWidth: 2,
         borderColor: "grey",
