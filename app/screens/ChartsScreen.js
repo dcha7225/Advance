@@ -1,5 +1,4 @@
 import { StyleSheet, SafeAreaView, View } from "react-native";
-import MenuBar from "../components/MenuBar";
 import Chart from "../components/Chart";
 
 export default function ChartScreen() {
@@ -9,7 +8,6 @@ export default function ChartScreen() {
                 dataset={[5, 10, 50, 20, 30, 10, 10, 10, 10, 10, 10]}
                 title={"1 rep Bench"}
             />
-            <MenuBar />
         </SafeAreaView>
     );
 }

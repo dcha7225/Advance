@@ -8,7 +8,6 @@ import {
     Keyboard,
 } from "react-native";
 import { useState } from "react";
-import MenuBar from "../components/MenuBar";
 import DropDownPicker from "react-native-dropdown-picker";
 import Table from "../components/Table";
 
@@ -26,12 +25,57 @@ export default function Today() {
     const [tracked, setTracked] = useState([]);
 
     const handleSubmit = (m, w, r) => {
+        let found = false;
+        let entered = false;
         if (m != null && w != "" && r != "") {
-            setTracked([
-                ...tracked,
-                { movement: m, weight: w, reps: r, id: tracked.length },
-            ]);
-            setOpen(false);
+            for (let i = 0; i < tracked.length; i++) {
+                if (!found && tracked[i].movement == m) {
+                    found = true;
+                } else if (found && tracked[i].movement != "") {
+                    setTracked([
+                        ...tracked.slice(0, i),
+                        {
+                            movement: "",
+                            weight: w,
+                            reps: r,
+                            id: tracked.length,
+                        },
+                        ...tracked.slice(i),
+                    ]);
+                    entered = true;
+                    setOpen(false);
+                    onChangeReps("");
+                    onChangeWeight("");
+                    Keyboard.dismiss();
+                    break;
+                }
+                if (found && i == tracked.length - 1) {
+                    setTracked([
+                        ...tracked,
+                        {
+                            movement: "",
+                            weight: w,
+                            reps: r,
+                            id: tracked.length,
+                        },
+                    ]);
+                    entered = true;
+                    setOpen(false);
+                    onChangeReps("");
+                    onChangeWeight("");
+                    Keyboard.dismiss();
+                }
+            }
+            if (!entered) {
+                setTracked([
+                    ...tracked,
+                    { movement: m, weight: w, reps: r, id: tracked.length },
+                ]);
+                setOpen(false);
+                onChangeReps("");
+                onChangeWeight("");
+                Keyboard.dismiss();
+            }
         }
     };
     const dismissKeyboard = () => {
@@ -94,7 +138,6 @@ export default function Today() {
             <View style={styles.table}>
                 <Table data={tracked} />
             </View>
-            <MenuBar />
         </SafeAreaView>
     );
 }
@@ -143,7 +186,7 @@ const styles = StyleSheet.create({
         color: "white",
     },
     table: {
-        height: 500,
+        height: 530,
         width: "100%",
     },
 });
