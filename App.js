@@ -12,6 +12,34 @@ const journalName = "Journal";
 const chartName = "Charts";
 
 export default function App() {
+    let dataSet = [
+        {
+            date: "May 21, 2023",
+            data: [
+                { movement: "test", reps: "10", weight: "20", id: "1" },
+                { movement: "test", reps: "10", weight: "20", id: "2" },
+                { movement: "test", reps: "10", weight: "20", id: "3" },
+            ],
+        },
+        {
+            date: "May 20, 2023",
+            data: [
+                { movement: "test", reps: "10", weight: "20", id: "1" },
+                { movement: "test", reps: "10", weight: "20", id: "2" },
+                { movement: "test", reps: "10", weight: "20", id: "3" },
+                { movement: "test", reps: "10", weight: "20", id: "4" },
+            ],
+        },
+        {
+            date: "May 19, 2023",
+            data: [
+                { movement: "test", reps: "10", weight: "20", id: "1" },
+                { movement: "test", reps: "10", weight: "20", id: "2" },
+                { movement: "test", reps: "10", weight: "20", id: "3" },
+            ],
+        },
+    ];
+
     return (
         <NavigationContainer>
             <Tab.Navigator

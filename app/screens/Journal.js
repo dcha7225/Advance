@@ -1,70 +1,95 @@
 import { StyleSheet, SafeAreaView, View, Text } from "react-native";
 import Table from "../components/Table";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useIsFocused } from "@react-navigation/native";
 
-export default function Journal({ data }) {
-    const options = { month: "short", day: "numeric", year: "numeric" };
-    const today = new Date().toLocaleDateString(undefined, options);
+const getData = async (key) => {
+    try {
+        const jsonValue = await AsyncStorage.getItem(key);
+        return jsonValue != null ? JSON.parse(jsonValue) : [];
+    } catch (e) {
+        console.log(e);
+    }
+};
+const getAllKeys = async () => {
+    let keys = [];
+    try {
+        keys = await AsyncStorage.getAllKeys();
+    } catch (e) {
+        console.log(e);
+    }
+    return keys;
+};
+export default function Journal() {
+    let today = new Date();
+    today =
+        today.getFullYear() +
+        "-" +
+        (today.getMonth() + 1) +
+        "-" +
+        today.getDate();
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [dataSet, setDataSet] = useState([]);
+    const isFocused = useIsFocused();
 
-    let dataSet = [
-        {
-            date: "May 21, 2023",
-            data: [
-                { movement: "test", reps: "10", weight: "20", id: "1" },
-                { movement: "test", reps: "10", weight: "20", id: "2" },
-                { movement: "test", reps: "10", weight: "20", id: "3" },
-            ],
-        },
-        {
-            date: "May 20, 2023",
-            data: [
-                { movement: "test", reps: "10", weight: "20", id: "1" },
-                { movement: "test", reps: "10", weight: "20", id: "2" },
-                { movement: "test", reps: "10", weight: "20", id: "3" },
-                { movement: "test", reps: "10", weight: "20", id: "4" },
-            ],
-        },
-        {
-            date: "May 19, 2023",
-            data: [
-                { movement: "test", reps: "10", weight: "20", id: "1" },
-                { movement: "test", reps: "10", weight: "20", id: "2" },
-                { movement: "test", reps: "10", weight: "20", id: "3" },
-            ],
-        },
-    ];
+    useEffect(() => {
+        if (isFocused) {
+            const loadData = async () => {
+                const allKeys = await getAllKeys();
+                allKeys.sort((a, b) => new Date(a) - new Date(b));
+                console.log(allKeys);
+                const dataPromises = allKeys.map(async (key) => {
+                    const curData = await getData(key);
+                    return { data: curData, date: key };
+                });
 
-    let currentData = dataSet[currentIndex].data;
-    let currentDate = dataSet[currentIndex].date;
+                const data = await Promise.all(dataPromises);
+                setDataSet(data);
+                setCurrentIndex(data.length - 1);
+            };
 
+            loadData();
+        }
+    }, [isFocused]);
+
+    let currentData;
+    let currentDate;
+    if (dataSet.length > 0) {
+        currentData = dataSet[currentIndex]?.data;
+        currentDate = dataSet[currentIndex]?.date;
+    } else {
+        currentData = [];
+        currentDate = today;
+    }
     return (
         <SafeAreaView style={styles.background}>
             <View style={styles.pageControl}>
-                <View
-                    style={currentIndex + 1 >= dataSet.length && { opacity: 0 }}
-                >
+                <View style={currentIndex - 1 < 0 && { opacity: 0 }}>
                     <Ionicons.Button
                         name="arrow-back-outline"
                         backgroundColor="black"
                         onPress={() => {
-                            if (currentIndex + 1 < dataSet.length) {
-                                setCurrentIndex(currentIndex + 1);
+                            if (currentIndex - 1 >= 0) {
+                                setCurrentIndex(currentIndex - 1);
                             }
                         }}
                     />
                 </View>
+
                 <Text style={styles.date}>
                     {currentDate === today ? "Today" : currentDate}
                 </Text>
-                <View style={currentIndex - 1 < 0 && { opacity: 0 }}>
+                <View
+                    style={currentIndex + 1 >= dataSet.length && { opacity: 0 }}
+                >
                     <Ionicons.Button
                         name="arrow-forward-outline"
                         backgroundColor="black"
                         onPress={() => {
-                            if (currentIndex - 1 >= 0) {
-                                setCurrentIndex(currentIndex - 1);
+                            if (currentIndex + 1 < dataSet.length) {
+                                setCurrentIndex(currentIndex + 1);
                             }
                         }}
                     />

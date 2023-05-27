@@ -7,9 +7,47 @@ import {
     TouchableHighlight,
     Keyboard,
 } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
 import Table from "../components/Table";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const storeData = async (key, value) => {
+    try {
+        const jsonValue = JSON.stringify(value);
+        await AsyncStorage.setItem(key, jsonValue);
+        console.log("entered");
+    } catch (e) {
+        console.log(e);
+    }
+};
+
+const getData = async (key) => {
+    try {
+        const jsonValue = await AsyncStorage.getItem(key);
+        return jsonValue != null ? JSON.parse(jsonValue) : [];
+    } catch (e) {
+        console.log(e);
+    }
+};
+const clearData = async () => {
+    try {
+        await AsyncStorage.clear();
+        console.log("Data cleared successfully!");
+    } catch (e) {
+        console.log(e);
+    }
+};
+
+const removeFew = async (keys) => {
+    try {
+        await AsyncStorage.multiRemove(keys);
+    } catch (e) {
+        console.log(e);
+    }
+    console.log("Done");
+};
 
 export default function Today() {
     const [open, setOpen] = useState(false);
@@ -24,7 +62,21 @@ export default function Today() {
     const [reps, onChangeReps] = useState("");
     const [tracked, setTracked] = useState([]);
 
-    const handleSubmit = (m, w, r) => {
+    let today = new Date();
+    today =
+        today.getFullYear() +
+        "-" +
+        (today.getMonth() + 1) +
+        "-" +
+        today.getDate();
+
+    useEffect(() => {
+        if (tracked.length > 0) {
+            storeData(today, tracked);
+        }
+    }, [tracked]);
+
+    const handleSubmit = async (m, w, r) => {
         let found = false;
         let entered = false;
         if (m != null && w != "" && r != "") {
@@ -69,7 +121,12 @@ export default function Today() {
             if (!entered) {
                 setTracked([
                     ...tracked,
-                    { movement: m, weight: w, reps: r, id: tracked.length },
+                    {
+                        movement: m,
+                        weight: w,
+                        reps: r,
+                        id: tracked.length,
+                    },
                 ]);
                 setOpen(false);
                 onChangeReps("");
