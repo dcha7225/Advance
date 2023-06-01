@@ -7,10 +7,10 @@ import {
     TouchableHighlight,
     Keyboard,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
 import Table from "../components/Table";
-
+import RadioGroup from "react-native-radio-buttons-group";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const storeData = async (key, value) => {
@@ -48,19 +48,73 @@ const removeFew = async (keys) => {
     }
     console.log("Done");
 };
+const getAllKeys = async () => {
+    let keys = [];
+    try {
+        keys = await AsyncStorage.getAllKeys();
+    } catch (e) {
+        console.log(e);
+    }
+    return keys;
+};
+
+function usePrevious(value) {
+    const ref = useRef();
+
+    useEffect(() => {
+        ref.current = value;
+    }, [value]);
+
+    return ref.current;
+}
+
+function useEffectAllDepsChange(fn, deps) {
+    const prevDeps = usePrevious(deps);
+    const changeTarget = useRef();
+
+    useEffect(() => {
+        // nothing to compare to yet
+        if (changeTarget.current === undefined) {
+            changeTarget.current = prevDeps;
+        }
+
+        // we're mounting, so call the callback
+        if (changeTarget.current === undefined) {
+            return fn();
+        }
+
+        // make sure every dependency has changed
+        if (changeTarget.current.every((dep, i) => dep !== deps[i])) {
+            changeTarget.current = deps;
+
+            return fn();
+        }
+    }, [fn, prevDeps, deps]);
+}
 
 export default function Today() {
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
-    const [items, setItems] = useState([
+    const [weight, onChangeWeight] = useState("");
+    const [reps, onChangeReps] = useState("");
+    const [tracked, setTracked] = useState([]);
+    const [movement, setMovement] = useState([
         { label: "Bench Press", value: "Bench Press" },
         { label: "Squat", value: "Squat" },
         { label: "Deadlift", value: "Deadlift" },
         { label: "Shoulder Press", value: "Shoulder Press" },
     ]);
-    const [weight, onChangeWeight] = useState("");
-    const [reps, onChangeReps] = useState("");
-    const [tracked, setTracked] = useState([]);
+    const [repRange, setRepRange] = useState([
+        { label: "1", value: [1, 1] },
+        { label: "1-5", value: [1, 5] },
+        { label: "6-10", value: [6, 10] },
+        { label: "11-15", value: [11, 15] },
+        { label: "16-20", value: [16, 20] },
+    ]);
+    const [moveOpen, setMoveOpen] = useState(false);
+    const [moveValue, setMoveValue] = useState(null);
+    const [rangeOpen, setRangeOpen] = useState(false);
+    const [rangeValue, setRangeValue] = useState(null);
+    const [selectedPO, setSelectedPO] = useState("2");
+    const [dataSet, setDataSet] = useState([]);
 
     let today = new Date();
     today =
@@ -70,11 +124,116 @@ export default function Today() {
         "-" +
         today.getDate();
 
+    const radioButtons = useMemo(
+        () => [
+            {
+                id: "1",
+                label: "yes",
+                value: "yes",
+            },
+            {
+                id: "2",
+                label: "no",
+                value: "no",
+            },
+        ],
+        []
+    );
+
+    useEffect(() => {
+        const loadData = async () => {
+            const allKeys = await getAllKeys();
+            allKeys.sort((a, b) => new Date(a) - new Date(b));
+            const dataPromises = allKeys.map(async (key) => {
+                const curData = await getData(key);
+                return { data: curData, date: key };
+            });
+
+            const data = await Promise.all(dataPromises);
+            setDataSet(data);
+            console.log("updated");
+        };
+        loadData();
+    }, []);
+
+    const suggPO = useMemo(() => {
+        if (rangeValue != null) {
+            if (tracked.length > 0) {
+                let movement1;
+                let index = null;
+                let lastIn = tracked.length - 1;
+                for (let y = 0; y <= lastIn; y++) {
+                    if (tracked[y].movement != "") {
+                        movement1 = tracked[y].movement;
+                    }
+                    if (movement1 == moveValue) {
+                        if (
+                            tracked[y].reps <= rangeValue[1] &&
+                            tracked[y].reps >= rangeValue[0]
+                        ) {
+                            index = y;
+                        }
+                        if (y == lastIn || tracked[y + 1].movement != "") {
+                            if (index == null) {
+                                index = -1;
+                            }
+                            break;
+                        }
+                    }
+                }
+                if (index != null) {
+                    if (index != -1) {
+                        if (tracked[index].reps == rangeValue[1]) {
+                            return (
+                                Number(tracked[index].weight) + 5
+                            ).toString();
+                        } else if (tracked[index].reps == rangeValue[0]) {
+                            return (
+                                Number(tracked[index].weight) - 5
+                            ).toString();
+                        } else {
+                            return tracked[index].weight;
+                        }
+                    } else {
+                        return null;
+                    }
+                }
+            }
+            for (let x = dataSet.length - 2; x >= 0; x--) {
+                const curData = dataSet[x].data;
+                let movement2;
+                for (let y = curData.length - 1; y >= 0; y--) {
+                    if (curData[y].movement != "") {
+                        movement2 = curData[y].movement;
+                    }
+                    if (
+                        movement2 == moveValue &&
+                        curData[y].reps <= rangeValue[1] &&
+                        curData[y].reps >= rangeValue[0]
+                    ) {
+                        if (curData[y].reps == rangeValue[1]) {
+                            return (Number(curData[y].weight) + 5).toString();
+                        } else if (curData[y].reps == rangeValue[0]) {
+                            return (Number(curData[y].weight) - 5).toString();
+                        } else {
+                            return curData[y].weight;
+                        }
+                    }
+                }
+            }
+            return null; //not enough data
+        }
+    }, [rangeValue, tracked, moveValue]);
+
     useEffect(() => {
         if (tracked.length > 0) {
             storeData(today, tracked);
         }
     }, [tracked]);
+
+    useEffect(() => {
+        setRangeValue(null);
+    }, [selectedPO]);
 
     const handleSubmit = async (m, w, r) => {
         let found = false;
@@ -95,7 +254,8 @@ export default function Today() {
                         ...tracked.slice(i),
                     ]);
                     entered = true;
-                    setOpen(false);
+                    setMoveOpen(false);
+                    setRangeOpen(false);
                     onChangeReps("");
                     onChangeWeight("");
                     Keyboard.dismiss();
@@ -112,7 +272,8 @@ export default function Today() {
                         },
                     ]);
                     entered = true;
-                    setOpen(false);
+                    setMoveOpen(false);
+                    setRangeOpen(false);
                     onChangeReps("");
                     onChangeWeight("");
                     Keyboard.dismiss();
@@ -128,13 +289,15 @@ export default function Today() {
                         id: tracked.length,
                     },
                 ]);
-                setOpen(false);
+                setMoveOpen(false);
+                setRangeOpen(false);
                 onChangeReps("");
                 onChangeWeight("");
                 Keyboard.dismiss();
             }
         }
     };
+
     const dismissKeyboard = () => {
         Keyboard.dismiss();
         return false;
@@ -149,21 +312,47 @@ export default function Today() {
             <View style={styles.new}>
                 <View style={styles.inputs}>
                     <DropDownPicker
-                        open={open}
-                        value={value}
-                        items={items}
-                        setOpen={setOpen}
-                        setValue={setValue}
-                        setItems={setItems}
+                        open={moveOpen}
+                        value={moveValue}
+                        items={movement}
+                        setOpen={setMoveOpen}
+                        setValue={setMoveValue}
+                        setItems={setMovement}
                         containerStyle={{
                             width: "90%",
                             height: 60,
                             top: 5,
                             margin: 0,
                         }}
+                        textStyle={{
+                            fontSize: 12,
+                        }}
                     />
-                    <Text>Excercise</Text>
+                    <Text>Movement</Text>
                 </View>
+                {selectedPO == 1 && (
+                    <View style={styles.inputs}>
+                        <DropDownPicker
+                            open={rangeOpen}
+                            value={rangeValue}
+                            items={repRange}
+                            setOpen={setRangeOpen}
+                            setValue={setRangeValue}
+                            setItems={setRepRange}
+                            containerStyle={{
+                                width: "90%",
+                                height: 60,
+                                top: 5,
+                                margin: 0,
+                            }}
+                            textStyle={{
+                                fontSize: 12,
+                            }}
+                        />
+                        <Text>Rep Range</Text>
+                    </View>
+                )}
+
                 <View style={styles.inputs}>
                     <TextInput
                         style={styles.inputBox}
@@ -179,14 +368,31 @@ export default function Today() {
                         style={styles.inputBox}
                         onChangeText={onChangeWeight}
                         value={weight}
-                        placeholder="0lbs"
+                        placeholder={
+                            selectedPO == 1
+                                ? suggPO == null
+                                    ? "Need data"
+                                    : suggPO
+                                : "0lbs"
+                        }
                         keyboardType="numeric"
                     />
                     <Text>Weight</Text>
                 </View>
             </View>
+            <View style={styles.RadioButtonContainer}>
+                <Text style={{ fontSize: 14, marginLeft: 5 }}>
+                    Suggest Progressive Overload:
+                </Text>
+                <RadioGroup
+                    radioButtons={radioButtons}
+                    onPress={setSelectedPO}
+                    selectedId={selectedPO}
+                    layout="row"
+                />
+            </View>
             <TouchableHighlight
-                onPress={() => handleSubmit(value, weight, reps)}
+                onPress={() => handleSubmit(moveValue, weight, reps)}
             >
                 <View style={styles.button}>
                     <Text style={styles.buttonText}>Submit</Text>
@@ -245,5 +451,12 @@ const styles = StyleSheet.create({
     table: {
         height: 530,
         width: "100%",
+    },
+    RadioButtonContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        width: "100%",
+        marginVertical: 5,
     },
 });

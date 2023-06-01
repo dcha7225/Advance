@@ -39,7 +39,6 @@ export default function Journal() {
             const loadData = async () => {
                 const allKeys = await getAllKeys();
                 allKeys.sort((a, b) => new Date(a) - new Date(b));
-                console.log(allKeys);
                 const dataPromises = allKeys.map(async (key) => {
                     const curData = await getData(key);
                     return { data: curData, date: key };
