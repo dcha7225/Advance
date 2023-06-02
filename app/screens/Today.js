@@ -7,7 +7,7 @@ import {
     TouchableHighlight,
     Keyboard,
 } from "react-native";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
 import Table from "../components/Table";
 import RadioGroup from "react-native-radio-buttons-group";
@@ -58,40 +58,6 @@ const getAllKeys = async () => {
     return keys;
 };
 
-function usePrevious(value) {
-    const ref = useRef();
-
-    useEffect(() => {
-        ref.current = value;
-    }, [value]);
-
-    return ref.current;
-}
-
-function useEffectAllDepsChange(fn, deps) {
-    const prevDeps = usePrevious(deps);
-    const changeTarget = useRef();
-
-    useEffect(() => {
-        // nothing to compare to yet
-        if (changeTarget.current === undefined) {
-            changeTarget.current = prevDeps;
-        }
-
-        // we're mounting, so call the callback
-        if (changeTarget.current === undefined) {
-            return fn();
-        }
-
-        // make sure every dependency has changed
-        if (changeTarget.current.every((dep, i) => dep !== deps[i])) {
-            changeTarget.current = deps;
-
-            return fn();
-        }
-    }, [fn, prevDeps, deps]);
-}
-
 export default function Today() {
     const [weight, onChangeWeight] = useState("");
     const [reps, onChangeReps] = useState("");
@@ -114,7 +80,6 @@ export default function Today() {
     const [rangeOpen, setRangeOpen] = useState(false);
     const [rangeValue, setRangeValue] = useState(null);
     const [selectedPO, setSelectedPO] = useState("2");
-    const [dataSet, setDataSet] = useState([]);
 
     let today = new Date();
     today =
@@ -123,6 +88,9 @@ export default function Today() {
         (today.getMonth() + 1) +
         "-" +
         today.getDate();
+
+    const firstMount = useRef(false);
+    const dataSet = useRef([]);
 
     const radioButtons = useMemo(
         () => [
@@ -149,11 +117,15 @@ export default function Today() {
                 return { data: curData, date: key };
             });
 
-            const data = await Promise.all(dataPromises);
-            setDataSet(data);
+            dataSet.current = await Promise.all(dataPromises);
+            const curData = dataSet.current;
+            if (curData[curData.length - 1].date == today) {
+                setTracked(curData[curData.length - 1].data);
+            }
             console.log("updated");
         };
         loadData();
+        firstMount.current = true;
     }, []);
 
     const suggPO = useMemo(() => {
@@ -174,50 +146,48 @@ export default function Today() {
                             index = y;
                         }
                         if (y == lastIn || tracked[y + 1].movement != "") {
-                            if (index == null) {
-                                index = -1;
-                            }
                             break;
                         }
                     }
                 }
                 if (index != null) {
-                    if (index != -1) {
-                        if (tracked[index].reps == rangeValue[1]) {
-                            return (
-                                Number(tracked[index].weight) + 5
-                            ).toString();
-                        } else if (tracked[index].reps == rangeValue[0]) {
-                            return (
-                                Number(tracked[index].weight) - 5
-                            ).toString();
-                        } else {
-                            return tracked[index].weight;
-                        }
+                    if (tracked[index].reps == rangeValue[1]) {
+                        return (Number(tracked[index].weight) + 5).toString();
+                    } else if (tracked[index].reps == rangeValue[0]) {
+                        return (Number(tracked[index].weight) - 5).toString();
                     } else {
-                        return null;
+                        return tracked[index].weight;
                     }
                 }
             }
-            for (let x = dataSet.length - 2; x >= 0; x--) {
-                const curData = dataSet[x].data;
+            for (let x = dataSet.current.length - 2; x >= 0; x--) {
+                const curData = dataSet.current[x].data;
                 let movement2;
-                for (let y = curData.length - 1; y >= 0; y--) {
+                let index = null;
+                let lastIn = curData.length - 1;
+                for (let y = 0; y <= lastIn; y++) {
                     if (curData[y].movement != "") {
                         movement2 = curData[y].movement;
                     }
-                    if (
-                        movement2 == moveValue &&
-                        curData[y].reps <= rangeValue[1] &&
-                        curData[y].reps >= rangeValue[0]
-                    ) {
-                        if (curData[y].reps == rangeValue[1]) {
-                            return (Number(curData[y].weight) + 5).toString();
-                        } else if (curData[y].reps == rangeValue[0]) {
-                            return (Number(curData[y].weight) - 5).toString();
-                        } else {
-                            return curData[y].weight;
+                    if (movement2 == moveValue) {
+                        if (
+                            curData[y].reps <= rangeValue[1] &&
+                            curData[y].reps >= rangeValue[0]
+                        ) {
+                            index = y;
                         }
+                        if (y == lastIn || curData[y + 1].movement != "") {
+                            break;
+                        }
+                    }
+                }
+                if (index != null) {
+                    if (curData[index].reps == rangeValue[1]) {
+                        return (Number(curData[index].weight) + 5).toString();
+                    } else if (curData[index].reps == rangeValue[0]) {
+                        return (Number(curData[index].weight) - 5).toString();
+                    } else {
+                        return curData[index].weight;
                     }
                 }
             }
@@ -226,7 +196,7 @@ export default function Today() {
     }, [rangeValue, tracked, moveValue]);
 
     useEffect(() => {
-        if (tracked.length > 0) {
+        if (tracked.length > 0 && !firstMount.current) {
             storeData(today, tracked);
         }
     }, [tracked]);
@@ -296,6 +266,7 @@ export default function Today() {
                 Keyboard.dismiss();
             }
         }
+        firstMount.current = false;
     };
 
     const dismissKeyboard = () => {
@@ -372,7 +343,7 @@ export default function Today() {
                             selectedPO == 1
                                 ? suggPO == null
                                     ? "Need data"
-                                    : suggPO
+                                    : suggPO + "lbs"
                                 : "0lbs"
                         }
                         keyboardType="numeric"
@@ -449,7 +420,7 @@ const styles = StyleSheet.create({
         color: "white",
     },
     table: {
-        height: 530,
+        height: 490,
         width: "100%",
     },
     RadioButtonContainer: {
