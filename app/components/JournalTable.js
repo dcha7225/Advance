@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, FlatList } from "react-native";
 import { DataTable } from "react-native-paper";
 
-export default function Table({ data }) {
+export default function JournalTable({ data }) {
     return (
         <DataTable style={styles.container}>
             <DataTable.Header style={styles.tableHeader}>

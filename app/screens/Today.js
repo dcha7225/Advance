@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useState, useEffect, useMemo, useRef } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
-import Table from "../components/Table";
+import TodayTable from "../components/TodayTable";
 import RadioGroup from "react-native-radio-buttons-group";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -126,6 +126,7 @@ export default function Today() {
         };
         loadData();
         firstMount.current = true;
+        //removeFew([today]);
     }, []);
 
     const suggPO = useMemo(() => {
@@ -160,7 +161,7 @@ export default function Today() {
                     }
                 }
             }
-            for (let x = dataSet.current.length - 2; x >= 0; x--) {
+            for (let x = dataSet.current.length - 1; x >= 0; x--) {
                 const curData = dataSet.current[x].data;
                 let movement2;
                 let index = null;
@@ -196,7 +197,7 @@ export default function Today() {
     }, [rangeValue, tracked, moveValue]);
 
     useEffect(() => {
-        if (tracked.length > 0 && !firstMount.current) {
+        if (!firstMount.current) {
             storeData(today, tracked);
         }
     }, [tracked]);
@@ -370,7 +371,7 @@ export default function Today() {
                 </View>
             </TouchableHighlight>
             <View style={styles.table}>
-                <Table data={tracked} />
+                <TodayTable data={tracked} setTracked={setTracked} />
             </View>
         </SafeAreaView>
     );

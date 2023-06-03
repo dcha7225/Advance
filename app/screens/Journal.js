@@ -1,5 +1,5 @@
 import { StyleSheet, SafeAreaView, View, Text } from "react-native";
-import Table from "../components/Table";
+import JournalTable from "../components/JournalTable";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -94,7 +94,7 @@ export default function Journal() {
                     />
                 </View>
             </View>
-            <Table data={currentData} />
+            <JournalTable data={currentData} />
         </SafeAreaView>
     );
 }
