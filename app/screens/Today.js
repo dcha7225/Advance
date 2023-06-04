@@ -69,7 +69,7 @@ export default function Today() {
         { label: "Shoulder Press", value: "Shoulder Press" },
     ]);
     const [repRange, setRepRange] = useState([
-        { label: "1", value: [1, 1] },
+        { label: "1 rep max", value: [1, 1] },
         { label: "1-5", value: [1, 5] },
         { label: "6-10", value: [6, 10] },
         { label: "11-15", value: [11, 15] },
@@ -130,7 +130,7 @@ export default function Today() {
     }, []);
 
     const suggPO = useMemo(() => {
-        if (rangeValue != null) {
+        if (rangeValue != null && moveValue != null) {
             if (tracked.length > 0) {
                 let movement1;
                 let index = null;
