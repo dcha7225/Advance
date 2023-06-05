@@ -5,16 +5,6 @@ import DropDownPicker from "react-native-dropdown-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 
-const storeData = async (key, value) => {
-    try {
-        const jsonValue = JSON.stringify(value);
-        await AsyncStorage.setItem(key, jsonValue);
-        console.log("entered");
-    } catch (e) {
-        console.log(e);
-    }
-};
-
 const getData = async (key) => {
     try {
         const jsonValue = await AsyncStorage.getItem(key);
@@ -23,23 +13,7 @@ const getData = async (key) => {
         console.log(e);
     }
 };
-const clearData = async () => {
-    try {
-        await AsyncStorage.clear();
-        console.log("Data cleared successfully!");
-    } catch (e) {
-        console.log(e);
-    }
-};
 
-const removeFew = async (keys) => {
-    try {
-        await AsyncStorage.multiRemove(keys);
-    } catch (e) {
-        console.log(e);
-    }
-    console.log("Done");
-};
 const getAllKeys = async () => {
     let keys = [];
     try {

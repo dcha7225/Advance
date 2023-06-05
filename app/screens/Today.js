@@ -385,8 +385,6 @@ export default function Today() {
 const styles = StyleSheet.create({
     background: {
         flex: 1,
-        width: "100%",
-        height: "100%",
         alignItems: "center",
         backgroundColor: "#fff",
     },
@@ -401,6 +399,11 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         zIndex: 1,
     },
+    inputs: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
     inputBox: {
         height: "45%",
         width: "90%",
@@ -409,10 +412,22 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 10,
     },
-    inputs: {
-        flex: 1,
-        justifyContent: "center",
+    dropdown: {
+        width: "90%",
+        height: 60,
+        top: 5,
+        margin: 0,
+    },
+    options: {
+        width: "100%",
+        height: "13%",
+    },
+    RadioButtonContainer: {
+        flexDirection: "row",
         alignItems: "center",
+        justifyContent: "flex-start",
+        width: "100%",
+        marginVertical: 5,
     },
     buttonContainer: {
         width: "40%",
@@ -437,22 +452,5 @@ const styles = StyleSheet.create({
     table: {
         height: "60%",
         width: "100%",
-    },
-    RadioButtonContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        width: "100%",
-        marginVertical: 5,
-    },
-    options: {
-        width: "100%",
-        height: "13%",
-    },
-    dropdown: {
-        width: "90%",
-        height: 60,
-        top: 5,
-        margin: 0,
     },
 });
