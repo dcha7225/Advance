@@ -37,7 +37,8 @@ export default function Journal() {
     useEffect(() => {
         if (isFocused) {
             const loadData = async () => {
-                const allKeys = await getAllKeys();
+                let allKeys = await getAllKeys();
+                allKeys = allKeys.filter((item) => item !== "movements");
                 allKeys.sort((a, b) => new Date(a) - new Date(b));
                 const dataPromises = allKeys.map(async (key) => {
                     const curData = await getData(key);

@@ -61,6 +61,10 @@ export default function ChartScreen() {
 
                 const data = await Promise.all(dataPromises);
                 setDataSet(data);
+                const savedMoves = await getData("movements");
+                if (savedMoves.length != 0) {
+                    setMovement(savedMoves);
+                }
             };
             loadData();
         }

@@ -13,12 +13,12 @@ import DropDownPicker from "react-native-dropdown-picker";
 import TodayTable from "../components/TodayTable";
 import RadioGroup from "react-native-radio-buttons-group";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Dialog from "react-native-dialog";
 
 const storeData = async (key, value) => {
     try {
         const jsonValue = JSON.stringify(value);
         await AsyncStorage.setItem(key, jsonValue);
-        console.log("entered");
     } catch (e) {
         console.log(e);
     }
@@ -81,7 +81,8 @@ export default function Today() {
     const [rangeOpen, setRangeOpen] = useState(false);
     const [rangeValue, setRangeValue] = useState(null);
     const [selectedPO, setSelectedPO] = useState("2");
-
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [newMove, setNewMove] = useState("");
     let today = new Date();
     today =
         today.getFullYear() +
@@ -124,10 +125,13 @@ export default function Today() {
 
             dataSet.current = await Promise.all(dataPromises);
             const curData = dataSet.current;
+            const savedMoves = await getData("movements");
+            if (savedMoves.length != 0) {
+                setMovement(savedMoves);
+            }
             if (curData[curData.length - 1].date == today) {
                 setTracked(curData[curData.length - 1].data);
             }
-            console.log("updated");
         };
         loadData();
         firstMount.current = true;
@@ -205,6 +209,11 @@ export default function Today() {
             storeData(today, tracked);
         }
     }, [tracked]);
+    useEffect(() => {
+        if (!firstMount.current) {
+            storeData("movements", movement);
+        }
+    }, [movement]);
 
     useEffect(() => {
         setRangeValue(null);
@@ -271,6 +280,13 @@ export default function Today() {
                 Keyboard.dismiss();
             }
         }
+        firstMount.current = false;
+    };
+
+    const handleNewMoveSubmit = (move) => {
+        setMovement([...movement, { label: move, value: move }]);
+        setAlertVisible(false);
+        setNewMove("");
         firstMount.current = false;
     };
 
@@ -361,14 +377,24 @@ export default function Today() {
                         layout="row"
                     />
                 </View>
-                <TouchableHighlight
-                    onPress={() => handleSubmit(moveValue, weight, reps)}
-                    style={styles.buttonContainer}
-                >
-                    <View style={styles.button}>
-                        <Text style={styles.buttonText}>Submit</Text>
-                    </View>
-                </TouchableHighlight>
+                <View style={styles.buttonsContainer}>
+                    <TouchableHighlight
+                        onPress={() => handleSubmit(moveValue, weight, reps)}
+                        style={styles.buttonTouchableContainer}
+                    >
+                        <View style={styles.button}>
+                            <Text style={styles.buttonText}>Submit</Text>
+                        </View>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                        onPress={() => setAlertVisible(true)}
+                        style={styles.buttonTouchableContainer}
+                    >
+                        <View style={styles.button}>
+                            <Text style={styles.buttonText}>New Movement</Text>
+                        </View>
+                    </TouchableHighlight>
+                </View>
             </View>
 
             <View style={styles.table}>
@@ -378,6 +404,21 @@ export default function Today() {
                     modifyMountStatus={modifyMountStatus}
                 />
             </View>
+            <Dialog.Container visible={alertVisible}>
+                <Dialog.Title>Add New Movement</Dialog.Title>
+                <Dialog.Description>
+                    Custom movements will be stored on "movement" drop down.
+                </Dialog.Description>
+                <Dialog.Input value={newMove} onChangeText={setNewMove} />
+                <Dialog.Button
+                    label="Cancel"
+                    onPress={() => setAlertVisible(false)}
+                />
+                <Dialog.Button
+                    label="Submit"
+                    onPress={() => handleNewMoveSubmit(newMove)}
+                />
+            </Dialog.Container>
         </SafeAreaView>
     );
 }
@@ -429,10 +470,15 @@ const styles = StyleSheet.create({
         width: "100%",
         marginVertical: 5,
     },
-    buttonContainer: {
-        width: "40%",
-        alignSelf: "center",
+    buttonsContainer: {
+        flexDirection: "row",
+        justifyContent: "center",
     },
+    buttonTouchableContainer: {
+        alignSelf: "center",
+        marginHorizontal: 5,
+    },
+
     button: {
         alignItems: "center",
         justifyContent: "center",
