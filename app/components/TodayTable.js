@@ -36,7 +36,7 @@ const removeItemById = (id, data) => {
     return filtered;
 };
 
-export default function TodayTable({ data, setTracked }) {
+export default function TodayTable({ data, setTracked, modifyMountStatus }) {
     return (
         <DataTable style={styles.container}>
             <DataTable.Header style={styles.tableHeader}>
@@ -52,7 +52,7 @@ export default function TodayTable({ data, setTracked }) {
                         <DataTable.Cell>{item.movement}</DataTable.Cell>
                         <DataTable.Cell>{item.reps}</DataTable.Cell>
                         <DataTable.Cell>
-                            <View style={styles.buttonContainer}>
+                            <View style={styles.weightContainer}>
                                 <Text style={{ paddingHorizontal: 25 }}>
                                     {item.weight}
                                 </Text>
@@ -61,6 +61,7 @@ export default function TodayTable({ data, setTracked }) {
                                         setTracked(
                                             removeItemById(item.id, data)
                                         );
+                                        modifyMountStatus();
                                     }}
                                 >
                                     <View style={styles.button}>
@@ -85,9 +86,9 @@ const styles = StyleSheet.create({
     tableHeader: {
         backgroundColor: "white",
     },
-    buttonContainer: {
+    weightContainer: {
         flex: 1,
-        justifyContent: "center",
+        justifyContent: "flex-end",
         alignItems: "center",
         flexDirection: "row",
     },
@@ -99,7 +100,6 @@ const styles = StyleSheet.create({
         backgroundColor: "maroon",
         height: 30,
         width: 50,
-        paddingHorizontal: 5,
     },
     buttonText: {
         fontSize: 10,

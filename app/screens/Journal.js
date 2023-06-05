@@ -94,7 +94,9 @@ export default function Journal() {
                     />
                 </View>
             </View>
-            <JournalTable data={currentData} />
+            <View style={styles.table}>
+                <JournalTable data={currentData} />
+            </View>
         </SafeAreaView>
     );
 }
@@ -107,12 +109,16 @@ const styles = StyleSheet.create({
     },
     pageControl: {
         width: "100%",
-        height: 40,
+        height: "8%",
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
     },
     date: {
         marginHorizontal: 20,
+    },
+    table: {
+        width: "100%",
+        height: "88%",
     },
 });

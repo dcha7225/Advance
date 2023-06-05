@@ -6,6 +6,7 @@ import {
     View,
     TouchableHighlight,
     Keyboard,
+    Image,
 } from "react-native";
 import { useState, useEffect, useMemo, useRef } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -92,6 +93,10 @@ export default function Today() {
     const firstMount = useRef(false);
     const dataSet = useRef([]);
 
+    const modifyMountStatus = () => {
+        firstMount.current = false;
+    };
+
     const radioButtons = useMemo(
         () => [
             {
@@ -126,7 +131,6 @@ export default function Today() {
         };
         loadData();
         firstMount.current = true;
-        //removeFew([today]);
     }, []);
 
     const suggPO = useMemo(() => {
@@ -280,7 +284,10 @@ export default function Today() {
             style={styles.background}
             onStartShouldSetResponder={dismissKeyboard}
         >
-            <Text> ADVANCE </Text>
+            <Image
+                style={styles.logo}
+                source={require("../assets/Advance-Logo.png")}
+            />
             <View style={styles.new}>
                 <View style={styles.inputs}>
                     <DropDownPicker
@@ -290,12 +297,7 @@ export default function Today() {
                         setOpen={setMoveOpen}
                         setValue={setMoveValue}
                         setItems={setMovement}
-                        containerStyle={{
-                            width: "90%",
-                            height: 60,
-                            top: 5,
-                            margin: 0,
-                        }}
+                        containerStyle={styles.dropdown}
                         textStyle={{
                             fontSize: 12,
                         }}
@@ -311,12 +313,7 @@ export default function Today() {
                             setOpen={setRangeOpen}
                             setValue={setRangeValue}
                             setItems={setRepRange}
-                            containerStyle={{
-                                width: "90%",
-                                height: 60,
-                                top: 5,
-                                margin: 0,
-                            }}
+                            containerStyle={styles.dropdown}
                             textStyle={{
                                 fontSize: 12,
                             }}
@@ -352,26 +349,34 @@ export default function Today() {
                     <Text>Weight</Text>
                 </View>
             </View>
-            <View style={styles.RadioButtonContainer}>
-                <Text style={{ fontSize: 14, marginLeft: 5 }}>
-                    Suggest Progressive Overload:
-                </Text>
-                <RadioGroup
-                    radioButtons={radioButtons}
-                    onPress={setSelectedPO}
-                    selectedId={selectedPO}
-                    layout="row"
-                />
-            </View>
-            <TouchableHighlight
-                onPress={() => handleSubmit(moveValue, weight, reps)}
-            >
-                <View style={styles.button}>
-                    <Text style={styles.buttonText}>Submit</Text>
+            <View style={styles.options}>
+                <View style={styles.RadioButtonContainer}>
+                    <Text style={{ fontSize: 14, marginLeft: 5 }}>
+                        Suggest Progressive Overload:
+                    </Text>
+                    <RadioGroup
+                        radioButtons={radioButtons}
+                        onPress={setSelectedPO}
+                        selectedId={selectedPO}
+                        layout="row"
+                    />
                 </View>
-            </TouchableHighlight>
+                <TouchableHighlight
+                    onPress={() => handleSubmit(moveValue, weight, reps)}
+                    style={styles.buttonContainer}
+                >
+                    <View style={styles.button}>
+                        <Text style={styles.buttonText}>Submit</Text>
+                    </View>
+                </TouchableHighlight>
+            </View>
+
             <View style={styles.table}>
-                <TodayTable data={tracked} setTracked={setTracked} />
+                <TodayTable
+                    data={tracked}
+                    setTracked={setTracked}
+                    modifyMountStatus={modifyMountStatus}
+                />
             </View>
         </SafeAreaView>
     );
@@ -385,14 +390,19 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "#fff",
     },
+    logo: {
+        height: "5%",
+        width: "45%",
+        resizeMode: "stretch",
+    },
     new: {
         width: "100%",
-        height: 100,
+        height: "17%",
         flexDirection: "row",
         zIndex: 1,
     },
     inputBox: {
-        height: 45,
+        height: "45%",
         width: "90%",
         margin: 12,
         borderWidth: 1,
@@ -403,6 +413,10 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+    },
+    buttonContainer: {
+        width: "40%",
+        alignSelf: "center",
     },
     button: {
         alignItems: "center",
@@ -421,7 +435,7 @@ const styles = StyleSheet.create({
         color: "white",
     },
     table: {
-        height: 490,
+        height: "60%",
         width: "100%",
     },
     RadioButtonContainer: {
@@ -430,5 +444,15 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         width: "100%",
         marginVertical: 5,
+    },
+    options: {
+        width: "100%",
+        height: "13%",
+    },
+    dropdown: {
+        width: "90%",
+        height: 60,
+        top: 5,
+        margin: 0,
     },
 });
