@@ -108,7 +108,7 @@ export default function Settings() {
         >
             <Text>Settings</Text>
 
-            <View style={[styles.inputs, { marginTop: 20, zIndex: 1 }]}>
+            <View style={[styles.inputs, { marginTop: 20, zIndex: 2 }]}>
                 <Text style={styles.optText}>Set rep range interval</Text>
                 <DropDownPicker
                     open={intOpen}
