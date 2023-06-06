@@ -15,7 +15,6 @@ import RadioGroup from "react-native-radio-buttons-group";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Dialog from "react-native-dialog";
 import { MyContext } from "../components/ContextProvider";
-import { useIsFocused } from "@react-navigation/native";
 
 const storeData = async (key, value) => {
     try {
@@ -79,7 +78,6 @@ export default function Today() {
         today.getDate();
 
     const dataSet = useRef([]);
-    const isFocused = useIsFocused();
 
     const modifyMountStatus = () => {
         firstMount.current = false;
@@ -189,11 +187,25 @@ export default function Today() {
     }, [intValue]);
 
     useEffect(() => {
+        if (!firstMount.current) {
+            storeData(today, tracked);
+        }
+    }, [tracked]);
+
+    useEffect(() => {
+        if (!firstMount.current) {
+            console.log("logged");
+            storeData("movements", movement);
+        }
         if (moveValue != null) {
             setMoveValue(null);
             console.log("reset move");
         }
     }, [movement]);
+
+    useEffect(() => {
+        setRangeValue(null);
+    }, [selectedPO]);
 
     let suggPO = useMemo(() => {
         if (rangeValue != null && moveValue != null) {
@@ -269,22 +281,6 @@ export default function Today() {
             return null; //not enough data
         }
     }, [rangeValue, tracked, moveValue, inc]);
-
-    useEffect(() => {
-        if (!firstMount.current) {
-            storeData(today, tracked);
-        }
-    }, [tracked]);
-
-    useEffect(() => {
-        if (!firstMount.current) {
-            storeData("movements", movement);
-        }
-    }, [movement]);
-
-    useEffect(() => {
-        setRangeValue(null);
-    }, [selectedPO]);
 
     const handleSubmit = async (m, w, r) => {
         let found = false;

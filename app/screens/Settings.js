@@ -8,10 +8,11 @@ import {
     Alert,
     Keyboard,
 } from "react-native";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MyContext } from "../components/ContextProvider";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function Settings() {
     const {
@@ -22,6 +23,7 @@ export default function Settings() {
         onChangeInc,
         setMovement,
         firstMount,
+        movement,
     } = useContext(MyContext);
 
     const [rangeInt, setRangeInt] = useState([
@@ -30,8 +32,25 @@ export default function Settings() {
         { label: "2-6, 7-11 ...", value: 4 },
         { label: "2-7, 8-13 ...", value: 5 },
     ]);
-
     const [intOpen, setIntOpen] = useState(false);
+
+    const [customMoves, setCustomMoves] = useState([]);
+    const [customOpen, setCustomOpen] = useState(false);
+    const [CMValue, setCMValue] = useState(null);
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        if (isFocused) {
+            const custMoves = movement.filter(
+                (item) =>
+                    item.label !== "Bench Press" &&
+                    item.label !== "Squat" &&
+                    item.label !== "Deadlift" &&
+                    item.label !== "Shoulder Press"
+            );
+            setCustomMoves(custMoves);
+        }
+    }, [isFocused, movement]);
 
     const clearData = async () => {
         try {
@@ -47,17 +66,14 @@ export default function Settings() {
             console.log(e);
         }
     };
-    const removeMovements = async () => {
-        try {
-            await AsyncStorage.removeItem("movements");
-            setMovement([
-                { label: "Bench Press", value: "Bench Press" },
-                { label: "Squat", value: "Squat" },
-                { label: "Deadlift", value: "Deadlift" },
-                { label: "Shoulder Press", value: "Shoulder Press" },
-            ]);
-        } catch (e) {
-            console.log(e);
+    const removeMovements = () => {
+        if (CMValue != null) {
+            const filteredMoves = movement.filter(
+                (item) => item.label !== CMValue
+            );
+            setMovement(filteredMoves);
+            setCMValue(null);
+            firstMount.current = false;
         }
     };
 
@@ -80,21 +96,6 @@ export default function Settings() {
             ]
         );
 
-    const handleMoveReset = () =>
-        Alert.alert(
-            "Warning",
-            "Are you sure you want to permanently erase all of your custom movements?",
-            [
-                {
-                    text: "No",
-                    style: "cancel",
-                },
-                {
-                    text: "Yes",
-                    onPress: () => removeMovements(),
-                },
-            ]
-        );
     const dismissKeyboard = () => {
         Keyboard.dismiss();
         return false;
@@ -116,19 +117,19 @@ export default function Settings() {
                     setOpen={setIntOpen}
                     setValue={setIntValue}
                     setItems={setRangeInt}
-                    containerStyle={styles.dropDown}
+                    containerStyle={[styles.dropDown, { flex: 0.35 }]}
                     textStyle={{
                         fontSize: 12,
                     }}
                 />
             </View>
             <View style={styles.inputs}>
-                <Text style={styles.optText}>
+                <Text style={[styles.optText, { flex: 0.5 }]}>
                     Set weight increment (Progressive Overload Suggestions in
                     lbs)
                 </Text>
                 <TextInput
-                    style={styles.inputBox}
+                    style={[styles.inputBox, { flex: 0.3 }]}
                     onChangeText={onChangeInc}
                     value={inc}
                     placeholder="0 lbs"
@@ -136,25 +137,40 @@ export default function Settings() {
                 />
             </View>
 
-            <View style={styles.inputs}>
-                <Text style={styles.optText}> Reset all data </Text>
+            <View style={[styles.inputs, { zIndex: 1 }]}>
+                <Text style={styles.optText}>Remove custom movement</Text>
+
+                <DropDownPicker
+                    open={customOpen}
+                    value={CMValue}
+                    items={customMoves}
+                    setOpen={setCustomOpen}
+                    setValue={setCMValue}
+                    setItems={setCustomMoves}
+                    containerStyle={[styles.dropDown]}
+                    textStyle={{
+                        fontSize: 12,
+                    }}
+                />
+
                 <TouchableHighlight
-                    onPress={() => handleReset()}
-                    style={styles.buttonTouchableContainer}
-                >
-                    <View style={styles.button}>
-                        <Text style={styles.buttonText}>RESET</Text>
-                    </View>
-                </TouchableHighlight>
-            </View>
-            <View style={styles.inputs}>
-                <Text style={styles.optText}>Remove all custom movements</Text>
-                <TouchableHighlight
-                    onPress={() => handleMoveReset()}
+                    onPress={() => removeMovements()}
                     style={styles.buttonTouchableContainer}
                 >
                     <View style={styles.button}>
                         <Text style={styles.buttonText}>Remove</Text>
+                    </View>
+                </TouchableHighlight>
+            </View>
+
+            <View style={styles.inputs}>
+                <Text style={styles.optText}> Reset all data </Text>
+                <TouchableHighlight
+                    onPress={() => handleReset()}
+                    style={styles.resetTouchable}
+                >
+                    <View style={styles.button}>
+                        <Text style={styles.buttonText}>RESET</Text>
                     </View>
                 </TouchableHighlight>
             </View>
@@ -180,35 +196,35 @@ const styles = StyleSheet.create({
     },
 
     optText: {
-        width: "50%",
+        flex: 0.4,
         margin: 10,
+        marginRight: 5,
     },
 
     dropDown: {
-        width: "40%",
+        flex: 0.3,
         marginVertical: 5,
         marginRight: 5,
     },
     inputBox: {
+        flex: 0.25,
         height: "70%",
-        width: "40%",
         margin: 5,
         borderWidth: 1,
         borderRadius: 5,
         padding: 10,
     },
 
-    buttonTouchableContainer: {
+    resetTouchable: {
+        flex: 0.25,
         alignSelf: "center",
         margin: 5,
-        width: "40%",
     },
 
     button: {
         alignItems: "center",
         justifyContent: "center",
         paddingVertical: 12,
-        paddingHorizontal: 32,
         borderRadius: 4,
         elevation: 3,
         backgroundColor: "maroon",
@@ -220,4 +236,5 @@ const styles = StyleSheet.create({
         letterSpacing: 0.25,
         color: "white",
     },
+    buttonTouchableContainer: { alignSelf: "center", margin: 5, flex: 0.25 },
 });
