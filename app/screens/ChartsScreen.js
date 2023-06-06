@@ -1,9 +1,10 @@
 import { StyleSheet, SafeAreaView, View, Text } from "react-native";
 import Chart from "../components/Chart";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useContext } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
+import { MyContext } from "../components/ContextProvider";
 
 const getData = async (key) => {
     try {
@@ -25,22 +26,12 @@ const getAllKeys = async () => {
 };
 
 export default function ChartScreen() {
-    const [movement, setMovement] = useState([
-        { label: "Bench Press", value: "Bench Press" },
-        { label: "Squat", value: "Squat" },
-        { label: "Deadlift", value: "Deadlift" },
-        { label: "Shoulder Press", value: "Shoulder Press" },
-    ]);
+    const { movement, setMovement, repRange, setRepRange } =
+        useContext(MyContext);
+
     const [moveOpen, setMoveOpen] = useState(false);
     const [moveValue, setMoveValue] = useState(null);
 
-    const [repRange, setRepRange] = useState([
-        { label: "1 rep max", value: [1, 1] },
-        { label: "1-5", value: [1, 5] },
-        { label: "6-10", value: [6, 10] },
-        { label: "11-15", value: [11, 15] },
-        { label: "16-20", value: [16, 20] },
-    ]);
     const [rangeOpen, setRangeOpen] = useState(false);
     const [rangeValue, setRangeValue] = useState(null);
 
@@ -61,10 +52,6 @@ export default function ChartScreen() {
 
                 const data = await Promise.all(dataPromises);
                 setDataSet(data);
-                const savedMoves = await getData("movements");
-                if (savedMoves.length != 0) {
-                    setMovement(savedMoves);
-                }
             };
             loadData();
         }
@@ -170,6 +157,8 @@ const styles = StyleSheet.create({
         height: "17%",
         flexDirection: "row",
         zIndex: 1,
+        marginTop: 5,
+        marginBottom: 10,
     },
     inputs: {
         flex: 1,
@@ -177,9 +166,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     dropDown: {
+        marginVertical: 10,
         width: "90%",
-        height: 60,
-        top: 5,
-        margin: 0,
     },
 });

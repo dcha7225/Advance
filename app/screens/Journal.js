@@ -22,6 +22,7 @@ const getAllKeys = async () => {
     }
     return keys;
 };
+
 export default function Journal() {
     let today = new Date();
     today =

@@ -8,12 +8,14 @@ import {
     Keyboard,
     Image,
 } from "react-native";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useContext } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
 import TodayTable from "../components/TodayTable";
 import RadioGroup from "react-native-radio-buttons-group";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Dialog from "react-native-dialog";
+import { MyContext } from "../components/ContextProvider";
+import { useIsFocused } from "@react-navigation/native";
 
 const storeData = async (key, value) => {
     try {
@@ -32,23 +34,7 @@ const getData = async (key) => {
         console.log(e);
     }
 };
-const clearData = async () => {
-    try {
-        await AsyncStorage.clear();
-        console.log("Data cleared successfully!");
-    } catch (e) {
-        console.log(e);
-    }
-};
 
-const removeFew = async (keys) => {
-    try {
-        await AsyncStorage.multiRemove(keys);
-    } catch (e) {
-        console.log(e);
-    }
-    console.log("Done");
-};
 const getAllKeys = async () => {
     let keys = [];
     try {
@@ -60,29 +46,30 @@ const getAllKeys = async () => {
 };
 
 export default function Today() {
-    const [weight, onChangeWeight] = useState("");
-    const [reps, onChangeReps] = useState("");
-    const [tracked, setTracked] = useState([]);
-    const [movement, setMovement] = useState([
-        { label: "Bench Press", value: "Bench Press" },
-        { label: "Squat", value: "Squat" },
-        { label: "Deadlift", value: "Deadlift" },
-        { label: "Shoulder Press", value: "Shoulder Press" },
-    ]);
-    const [repRange, setRepRange] = useState([
-        { label: "1 rep max", value: [1, 1] },
-        { label: "1-5", value: [1, 5] },
-        { label: "6-10", value: [6, 10] },
-        { label: "11-15", value: [11, 15] },
-        { label: "16-20", value: [16, 20] },
-    ]);
+    const {
+        tracked,
+        setTracked,
+        intValue,
+        inc,
+        movement,
+        setMovement,
+        firstMount,
+        repRange,
+        setRepRange,
+    } = useContext(MyContext);
+
     const [moveOpen, setMoveOpen] = useState(false);
     const [moveValue, setMoveValue] = useState(null);
+
     const [rangeOpen, setRangeOpen] = useState(false);
     const [rangeValue, setRangeValue] = useState(null);
+
+    const [weight, onChangeWeight] = useState("");
+    const [reps, onChangeReps] = useState("");
     const [selectedPO, setSelectedPO] = useState("2");
     const [alertVisible, setAlertVisible] = useState(false);
     const [newMove, setNewMove] = useState("");
+
     let today = new Date();
     today =
         today.getFullYear() +
@@ -91,13 +78,66 @@ export default function Today() {
         "-" +
         today.getDate();
 
-    const firstMount = useRef(false);
     const dataSet = useRef([]);
+    const isFocused = useIsFocused();
 
     const modifyMountStatus = () => {
         firstMount.current = false;
     };
 
+    const handleInt = () => {
+        switch (intValue) {
+            case 2:
+                setRepRange([
+                    { label: "1 rep max", value: [1, 1] },
+                    { label: "2-4", value: [2, 4] },
+                    { label: "5-7", value: [5, 7] },
+                    { label: "8-10", value: [8, 10] },
+                    { label: "11-13", value: [11, 13] },
+                    { label: "14-16", value: [14, 16] },
+                    { label: "17-19", value: [17, 19] },
+                ]);
+                break;
+            case 3:
+                setRepRange([
+                    { label: "1 rep max", value: [1, 1] },
+                    { label: "2-5", value: [2, 5] },
+                    { label: "6-9", value: [6, 9] },
+                    { label: "10-13", value: [10, 13] },
+                    { label: "14-17", value: [14, 17] },
+                    { label: "18-21", value: [18, 21] },
+                ]);
+                break;
+            case 4:
+                setRepRange([
+                    { label: "1 rep max", value: [1, 1] },
+                    { label: "2-6", value: [2, 6] },
+                    { label: "7-11", value: [7, 11] },
+                    { label: "12-16", value: [12, 16] },
+                    { label: "17-21", value: [17, 21] },
+                ]);
+                break;
+            case 5:
+                setRepRange([
+                    { label: "1 rep max", value: [1, 1] },
+                    { label: "2-7", value: [2, 7] },
+                    { label: "8-13", value: [8, 13] },
+                    { label: "14-19", value: [14, 19] },
+                    { label: "20-25", value: [20, 25] },
+                ]);
+                break;
+            default:
+                setRepRange([
+                    { label: "1 rep max", value: [1, 1] },
+                    { label: "2-5", value: [2, 5] },
+                    { label: "6-9", value: [6, 9] },
+                    { label: "10-13", value: [10, 13] },
+                    { label: "14-17", value: [14, 17] },
+                    { label: "18-21", value: [18, 21] },
+                ]);
+                break;
+        }
+    };
     const radioButtons = useMemo(
         () => [
             {
@@ -129,7 +169,10 @@ export default function Today() {
             if (savedMoves.length != 0) {
                 setMovement(savedMoves);
             }
-            if (curData[curData.length - 1].date == today) {
+            if (
+                curData.length != 0 &&
+                curData[curData.length - 1].date == today
+            ) {
                 setTracked(curData[curData.length - 1].data);
             }
         };
@@ -137,7 +180,22 @@ export default function Today() {
         firstMount.current = true;
     }, []);
 
-    const suggPO = useMemo(() => {
+    useEffect(() => {
+        handleInt();
+        if (rangeValue != null) {
+            setRangeValue(null);
+            console.log("reset Int");
+        }
+    }, [intValue]);
+
+    useEffect(() => {
+        if (moveValue != null) {
+            setMoveValue(null);
+            console.log("reset move");
+        }
+    }, [movement]);
+
+    let suggPO = useMemo(() => {
         if (rangeValue != null && moveValue != null) {
             if (tracked.length > 0) {
                 let movement1;
@@ -161,9 +219,13 @@ export default function Today() {
                 }
                 if (index != null) {
                     if (tracked[index].reps == rangeValue[1]) {
-                        return (Number(tracked[index].weight) + 5).toString();
+                        return (
+                            Number(tracked[index].weight) + Number(inc)
+                        ).toString();
                     } else if (tracked[index].reps == rangeValue[0]) {
-                        return (Number(tracked[index].weight) - 5).toString();
+                        return (
+                            Number(tracked[index].weight) - Number(inc)
+                        ).toString();
                     } else {
                         return tracked[index].weight;
                     }
@@ -192,9 +254,13 @@ export default function Today() {
                 }
                 if (index != null) {
                     if (curData[index].reps == rangeValue[1]) {
-                        return (Number(curData[index].weight) + 5).toString();
+                        return (
+                            Number(curData[index].weight) + Number(inc)
+                        ).toString();
                     } else if (curData[index].reps == rangeValue[0]) {
-                        return (Number(curData[index].weight) - 5).toString();
+                        return (
+                            Number(curData[index].weight) - Number(inc)
+                        ).toString();
                     } else {
                         return curData[index].weight;
                     }
@@ -209,6 +275,7 @@ export default function Today() {
             storeData(today, tracked);
         }
     }, [tracked]);
+
     useEffect(() => {
         if (!firstMount.current) {
             storeData("movements", movement);
@@ -379,19 +446,19 @@ export default function Today() {
                 </View>
                 <View style={styles.buttonsContainer}>
                     <TouchableHighlight
-                        onPress={() => handleSubmit(moveValue, weight, reps)}
-                        style={styles.buttonTouchableContainer}
-                    >
-                        <View style={styles.button}>
-                            <Text style={styles.buttonText}>Submit</Text>
-                        </View>
-                    </TouchableHighlight>
-                    <TouchableHighlight
                         onPress={() => setAlertVisible(true)}
                         style={styles.buttonTouchableContainer}
                     >
                         <View style={styles.button}>
                             <Text style={styles.buttonText}>New Movement</Text>
+                        </View>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                        onPress={() => handleSubmit(moveValue, weight, reps)}
+                        style={styles.buttonTouchableContainer}
+                    >
+                        <View style={styles.button}>
+                            <Text style={styles.buttonText}>Submit</Text>
                         </View>
                     </TouchableHighlight>
                 </View>
@@ -454,10 +521,8 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     dropdown: {
+        marginVertical: 11,
         width: "90%",
-        height: 60,
-        top: 5,
-        margin: 0,
     },
     options: {
         width: "100%",
