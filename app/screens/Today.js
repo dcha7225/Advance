@@ -268,7 +268,7 @@ export default function Today() {
             }
             return null; //not enough data
         }
-    }, [rangeValue, tracked, moveValue]);
+    }, [rangeValue, tracked, moveValue, inc]);
 
     useEffect(() => {
         if (!firstMount.current) {
@@ -424,6 +424,8 @@ export default function Today() {
                             selectedPO == 1
                                 ? suggPO == null
                                     ? "Need data"
+                                    : suggPO < 0
+                                    ? "0 lbs"
                                     : suggPO + "lbs"
                                 : "0lbs"
                         }
