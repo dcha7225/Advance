@@ -103,7 +103,11 @@ export default function ChartScreen() {
     }, [dataSet, rangeValue, moveValue]);
     return (
         <SafeAreaView style={styles.background}>
-            <Text>Progress</Text>
+            <View style={styles.titleBar}>
+                <Text style={{ fontSize: 18, fontWeight: "600" }}>
+                    Progress
+                </Text>
+            </View>
             <View style={styles.new}>
                 <View style={styles.inputs}>
                     <DropDownPicker
@@ -151,6 +155,16 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#fff",
         alignItems: "center",
+    },
+    titleBar: {
+        width: "100%",
+        height: "8%",
+        backgroundColor: "#fff",
+        alignItems: "center",
+        justifyContent: "center",
+        borderBottomWidth: 1,
+        borderBottomColor: "#ccc",
+        borderRadius: 2,
     },
     new: {
         width: "100%",

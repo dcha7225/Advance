@@ -66,34 +66,38 @@ export default function Journal() {
     }
     return (
         <SafeAreaView style={styles.background}>
-            <View style={styles.pageControl}>
-                <View style={currentIndex - 1 < 0 && { opacity: 0 }}>
-                    <Ionicons.Button
-                        name="arrow-back-outline"
-                        backgroundColor="black"
-                        onPress={() => {
-                            if (currentIndex - 1 >= 0) {
-                                setCurrentIndex(currentIndex - 1);
-                            }
-                        }}
-                    />
-                </View>
+            <View style={styles.titleBar}>
+                <View style={styles.pageControl}>
+                    <View style={currentIndex - 1 < 0 && { opacity: 0 }}>
+                        <Ionicons.Button
+                            name="arrow-back-outline"
+                            backgroundColor="black"
+                            onPress={() => {
+                                if (currentIndex - 1 >= 0) {
+                                    setCurrentIndex(currentIndex - 1);
+                                }
+                            }}
+                        />
+                    </View>
 
-                <Text style={styles.date}>
-                    {currentDate === today ? "Today" : currentDate}
-                </Text>
-                <View
-                    style={currentIndex + 1 >= dataSet.length && { opacity: 0 }}
-                >
-                    <Ionicons.Button
-                        name="arrow-forward-outline"
-                        backgroundColor="black"
-                        onPress={() => {
-                            if (currentIndex + 1 < dataSet.length) {
-                                setCurrentIndex(currentIndex + 1);
-                            }
-                        }}
-                    />
+                    <Text style={styles.date}>
+                        {currentDate === today ? "Today" : currentDate}
+                    </Text>
+                    <View
+                        style={
+                            currentIndex + 1 >= dataSet.length && { opacity: 0 }
+                        }
+                    >
+                        <Ionicons.Button
+                            name="arrow-forward-outline"
+                            backgroundColor="black"
+                            onPress={() => {
+                                if (currentIndex + 1 < dataSet.length) {
+                                    setCurrentIndex(currentIndex + 1);
+                                }
+                            }}
+                        />
+                    </View>
                 </View>
             </View>
             <View style={styles.table}>
@@ -102,22 +106,31 @@ export default function Journal() {
         </SafeAreaView>
     );
 }
-
 const styles = StyleSheet.create({
     background: {
         flex: 1,
         backgroundColor: "#fff",
         alignItems: "center",
     },
-    pageControl: {
+    titleBar: {
         width: "100%",
         height: "8%",
+        backgroundColor: "#fff",
+        alignItems: "center",
+        justifyContent: "center",
+        borderBottomWidth: 1,
+        borderBottomColor: "#ccc",
+        borderRadius: 2,
+    },
+    pageControl: {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
     },
     date: {
         marginHorizontal: 20,
+        fontSize: 18,
+        fontWeight: "600",
     },
     table: {
         width: "100%",

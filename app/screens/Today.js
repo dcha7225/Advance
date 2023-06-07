@@ -156,13 +156,14 @@ export default function Today() {
         const loadData = async () => {
             const allKeys = await getAllKeys();
             allKeys.sort((a, b) => new Date(a) - new Date(b));
-            const dataPromises = allKeys.map(async (key) => {
-                const curData = await getData(key);
-                return { data: curData, date: key };
-            });
-
-            dataSet.current = await Promise.all(dataPromises);
-            const curData = dataSet.current;
+            const curData = [];
+            for (const key of allKeys) {
+                if (key != "movements") {
+                    const d = await getData(key);
+                    curData.push({ data: d, date: key });
+                }
+            }
+            dataSet.current = curData;
             const savedMoves = await getData("movements");
             if (savedMoves.length != 0) {
                 setMovement(savedMoves);
@@ -554,7 +555,7 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 16,
         lineHeight: 21,
-        fontWeight: "bold",
+        fontWeight: "600",
         letterSpacing: 0.25,
         color: "white",
     },

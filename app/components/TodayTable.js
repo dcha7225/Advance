@@ -65,9 +65,7 @@ export default function TodayTable({ data, setTracked, modifyMountStatus }) {
                                     }}
                                 >
                                     <View style={styles.button}>
-                                        <Text style={styles.buttonText}>
-                                            Remove
-                                        </Text>
+                                        <Text style={styles.buttonText}>x</Text>
                                     </View>
                                 </TouchableHighlight>
                             </View>
@@ -102,7 +100,7 @@ const styles = StyleSheet.create({
         width: 50,
     },
     buttonText: {
-        fontSize: 10,
+        fontSize: 15,
         lineHeight: 21,
         fontWeight: "bold",
         color: "white",

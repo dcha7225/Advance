@@ -106,7 +106,16 @@ export default function Settings() {
             style={styles.background}
             onStartShouldSetResponder={dismissKeyboard}
         >
-            <Text>Settings</Text>
+            <View style={styles.titleBar}>
+                <Text
+                    style={{
+                        fontSize: 18,
+                        fontWeight: "600",
+                    }}
+                >
+                    Settings
+                </Text>
+            </View>
 
             <View style={[styles.inputs, { marginTop: 20, zIndex: 2 }]}>
                 <Text style={styles.optText}>Set rep range interval</Text>
@@ -118,6 +127,8 @@ export default function Settings() {
                     setValue={setIntValue}
                     setItems={setRangeInt}
                     containerStyle={[styles.dropDown, { flex: 0.35 }]}
+                    style={{ borderColor: "#ccc" }}
+                    dropDownContainerStyle={{ borderColor: "#ccc" }}
                     textStyle={{
                         fontSize: 12,
                     }}
@@ -147,7 +158,9 @@ export default function Settings() {
                     setOpen={setCustomOpen}
                     setValue={setCMValue}
                     setItems={setCustomMoves}
-                    containerStyle={[styles.dropDown]}
+                    containerStyle={styles.dropDown}
+                    style={{ borderColor: "#ccc" }}
+                    dropDownContainerStyle={{ borderColor: "#ccc" }}
                     textStyle={{
                         fontSize: 12,
                     }}
@@ -184,12 +197,22 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         alignItems: "center",
     },
+    titleBar: {
+        width: "100%",
+        height: "8%",
+        backgroundColor: "#fff",
+        alignItems: "center",
+        justifyContent: "center",
+        borderBottomWidth: 1,
+        borderBottomColor: "#ccc",
+        borderRadius: 2,
+    },
     inputs: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
         borderWidth: 1,
-        borderColor: "black",
+        borderColor: "#ccc",
         borderRadius: 4,
         marginVertical: 10,
         width: "95%",
@@ -213,6 +236,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 5,
         padding: 10,
+        borderColor: "#ccc",
     },
 
     resetTouchable: {
