@@ -1,29 +1,10 @@
-import { StyleSheet, SafeAreaView, View, Text } from "react-native";
+import { StyleSheet, SafeAreaView, View, Text, Alert } from "react-native";
 import Chart from "../components/Chart";
-import { useState, useEffect, useMemo, useRef, useContext } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import { MyContext } from "../components/ContextProvider";
-
-const getData = async (key) => {
-    try {
-        const jsonValue = await AsyncStorage.getItem(key);
-        return jsonValue != null ? JSON.parse(jsonValue) : [];
-    } catch (e) {
-        console.log(e);
-    }
-};
-
-const getAllKeys = async () => {
-    let keys = [];
-    try {
-        keys = await AsyncStorage.getAllKeys();
-    } catch (e) {
-        console.log(e);
-    }
-    return keys;
-};
+import { getAllKeys, getData } from "../../AsyncStor";
 
 export default function ChartScreen() {
     const { movement, setMovement, repRange, setRepRange } =
@@ -43,13 +24,13 @@ export default function ChartScreen() {
     useEffect(() => {
         if (isFocused) {
             const loadData = async () => {
-                const allKeys = await getAllKeys();
+                let allKeys = await getAllKeys();
+                allKeys = allKeys.filter((item) => item !== "movements");
                 allKeys.sort((a, b) => new Date(a) - new Date(b));
                 const dataPromises = allKeys.map(async (key) => {
                     const curData = await getData(key);
                     return { data: curData, date: key };
                 });
-
                 const data = await Promise.all(dataPromises);
                 setDataSet(data);
             };

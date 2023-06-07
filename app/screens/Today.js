@@ -12,37 +12,9 @@ import { useState, useEffect, useMemo, useRef, useContext } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
 import TodayTable from "../components/TodayTable";
 import RadioGroup from "react-native-radio-buttons-group";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Dialog from "react-native-dialog";
 import { MyContext } from "../components/ContextProvider";
-
-const storeData = async (key, value) => {
-    try {
-        const jsonValue = JSON.stringify(value);
-        await AsyncStorage.setItem(key, jsonValue);
-    } catch (e) {
-        console.log(e);
-    }
-};
-
-const getData = async (key) => {
-    try {
-        const jsonValue = await AsyncStorage.getItem(key);
-        return jsonValue != null ? JSON.parse(jsonValue) : [];
-    } catch (e) {
-        console.log(e);
-    }
-};
-
-const getAllKeys = async () => {
-    let keys = [];
-    try {
-        keys = await AsyncStorage.getAllKeys();
-    } catch (e) {
-        console.log(e);
-    }
-    return keys;
-};
+import { getAllKeys, getData, storeData } from "../../AsyncStor";
 
 export default function Today() {
     const {
@@ -176,6 +148,7 @@ export default function Today() {
             }
         };
         loadData();
+
         firstMount.current = true;
     }, []);
 
@@ -183,7 +156,6 @@ export default function Today() {
         handleInt();
         if (rangeValue != null) {
             setRangeValue(null);
-            console.log("reset Int");
         }
     }, [intValue]);
 
@@ -195,12 +167,10 @@ export default function Today() {
 
     useEffect(() => {
         if (!firstMount.current) {
-            console.log("logged");
             storeData("movements", movement);
         }
         if (moveValue != null) {
             setMoveValue(null);
-            console.log("reset move");
         }
     }, [movement]);
 
@@ -348,10 +318,12 @@ export default function Today() {
     };
 
     const handleNewMoveSubmit = (move) => {
-        setMovement([...movement, { label: move, value: move }]);
-        setAlertVisible(false);
-        setNewMove("");
-        firstMount.current = false;
+        if (move.trim().length !== 0) {
+            setMovement([...movement, { label: move, value: move }]);
+            setAlertVisible(false);
+            setNewMove("");
+            firstMount.current = false;
+        }
     };
 
     const dismissKeyboard = () => {

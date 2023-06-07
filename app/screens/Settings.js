@@ -13,6 +13,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MyContext } from "../components/ContextProvider";
 import { useIsFocused } from "@react-navigation/native";
+import { errorAlert } from "../../AsyncStor";
 
 export default function Settings() {
     const {
@@ -63,7 +64,7 @@ export default function Settings() {
                 { label: "Shoulder Press", value: "Shoulder Press" },
             ]);
         } catch (e) {
-            console.log(e);
+            errorAlert(e);
         }
     };
     const removeMovements = () => {
@@ -71,9 +72,9 @@ export default function Settings() {
             const filteredMoves = movement.filter(
                 (item) => item.label !== CMValue
             );
+            firstMount.current = false;
             setMovement(filteredMoves);
             setCMValue(null);
-            firstMount.current = false;
         }
     };
 

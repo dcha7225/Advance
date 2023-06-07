@@ -8,6 +8,7 @@ import Journal from "./app/screens/Journal";
 import Settings from "./app/screens/Settings";
 
 import { MyContextProvider } from "./app/components/ContextProvider";
+import ErrorBoundary from "./app/components/ErrorHandler";
 
 const Tab = createBottomTabNavigator();
 
@@ -18,51 +19,55 @@ const settingsName = "Settings";
 
 export default function App() {
     return (
-        <MyContextProvider>
-            <NavigationContainer>
-                <Tab.Navigator
-                    initialRouteName={todayName}
-                    screenOptions={({ route }) => ({
-                        tabBarActiveTintColor: "tomato",
-                        tabBarInactiveTintColor: "grey",
-                        headerShown: false,
+        <ErrorBoundary>
+            <MyContextProvider>
+                <NavigationContainer>
+                    <Tab.Navigator
+                        initialRouteName={todayName}
+                        screenOptions={({ route }) => ({
+                            tabBarActiveTintColor: "#4b4c4d",
+                            tabBarInactiveTintColor: "grey",
+                            headerShown: false,
 
-                        tabBarIcon: ({ focused, color, size }) => {
-                            let iconName;
-                            let rn = route.name;
+                            tabBarIcon: ({ focused, color, size }) => {
+                                let iconName;
+                                let rn = route.name;
 
-                            if (rn === todayName) {
-                                iconName = focused ? "today" : "today-outline";
-                            } else if (rn === journalName) {
-                                iconName = focused
-                                    ? "journal"
-                                    : "journal-outline";
-                            } else if (rn === chartName) {
-                                iconName = focused
-                                    ? "bar-chart"
-                                    : "bar-chart-outline";
-                            } else if (rn === settingsName) {
-                                iconName = focused
-                                    ? "settings"
-                                    : "settings-outline";
-                            }
+                                if (rn === todayName) {
+                                    iconName = focused
+                                        ? "today"
+                                        : "today-outline";
+                                } else if (rn === journalName) {
+                                    iconName = focused
+                                        ? "journal"
+                                        : "journal-outline";
+                                } else if (rn === chartName) {
+                                    iconName = focused
+                                        ? "bar-chart"
+                                        : "bar-chart-outline";
+                                } else if (rn === settingsName) {
+                                    iconName = focused
+                                        ? "settings"
+                                        : "settings-outline";
+                                }
 
-                            return (
-                                <Ionicons
-                                    name={iconName}
-                                    size={size}
-                                    color={color}
-                                />
-                            );
-                        },
-                    })}
-                >
-                    <Tab.Screen name={todayName} component={Today} />
-                    <Tab.Screen name={chartName} component={Chart} />
-                    <Tab.Screen name={journalName} component={Journal} />
-                    <Tab.Screen name={settingsName} component={Settings} />
-                </Tab.Navigator>
-            </NavigationContainer>
-        </MyContextProvider>
+                                return (
+                                    <Ionicons
+                                        name={iconName}
+                                        size={size}
+                                        color={color}
+                                    />
+                                );
+                            },
+                        })}
+                    >
+                        <Tab.Screen name={todayName} component={Today} />
+                        <Tab.Screen name={chartName} component={Chart} />
+                        <Tab.Screen name={journalName} component={Journal} />
+                        <Tab.Screen name={settingsName} component={Settings} />
+                    </Tab.Navigator>
+                </NavigationContainer>
+            </MyContextProvider>
+        </ErrorBoundary>
     );
 }

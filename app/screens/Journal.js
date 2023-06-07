@@ -2,26 +2,8 @@ import { StyleSheet, SafeAreaView, View, Text } from "react-native";
 import JournalTable from "../components/JournalTable";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
-
-const getData = async (key) => {
-    try {
-        const jsonValue = await AsyncStorage.getItem(key);
-        return jsonValue != null ? JSON.parse(jsonValue) : [];
-    } catch (e) {
-        console.log(e);
-    }
-};
-const getAllKeys = async () => {
-    let keys = [];
-    try {
-        keys = await AsyncStorage.getAllKeys();
-    } catch (e) {
-        console.log(e);
-    }
-    return keys;
-};
+import { getAllKeys, getData } from "../../AsyncStor";
 
 export default function Journal() {
     let today = new Date();
