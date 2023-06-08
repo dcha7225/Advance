@@ -99,6 +99,14 @@ export default function ChartScreen() {
                         setValue={setMoveValue}
                         setItems={setMovement}
                         containerStyle={styles.dropDown}
+                        style={{
+                            backgroundColor: "#efefef",
+                            borderColor: "#ccc",
+                        }}
+                        dropDownContainerStyle={{
+                            borderColor: "#ccc",
+                            backgroundColor: "#efefef",
+                        }}
                         textStyle={{
                             fontSize: 12,
                         }}
@@ -115,6 +123,14 @@ export default function ChartScreen() {
                         setValue={setRangeValue}
                         setItems={setRepRange}
                         containerStyle={styles.dropDown}
+                        style={{
+                            backgroundColor: "#efefef",
+                            borderColor: "#ccc",
+                        }}
+                        dropDownContainerStyle={{
+                            borderColor: "#ccc",
+                            backgroundColor: "#efefef",
+                        }}
                         textStyle={{
                             fontSize: 12,
                         }}

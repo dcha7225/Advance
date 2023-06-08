@@ -20,7 +20,15 @@ class ErrorBoundary extends Component {
         if (this.state.hasError) {
             return (
                 <SafeAreaView>
-                    <Text>Oops! Something went wrong.</Text>
+                    <Text
+                        style={{
+                            textAlign: "center",
+                            margin: 10,
+                            fontWeight: "600",
+                        }}
+                    >
+                        Oops! Something went wrong.
+                    </Text>
                 </SafeAreaView>
             );
         }

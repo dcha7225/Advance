@@ -116,6 +116,6 @@ const styles = StyleSheet.create({
     },
     table: {
         width: "100%",
-        height: "88%",
+        height: "87%",
     },
 });

@@ -128,8 +128,14 @@ export default function Settings() {
                     setValue={setIntValue}
                     setItems={setRangeInt}
                     containerStyle={[styles.dropDown, { flex: 0.35 }]}
-                    style={{ borderColor: "#ccc" }}
-                    dropDownContainerStyle={{ borderColor: "#ccc" }}
+                    style={{
+                        backgroundColor: "#efefef",
+                        borderColor: "#ccc",
+                    }}
+                    dropDownContainerStyle={{
+                        borderColor: "#ccc",
+                        backgroundColor: "#efefef",
+                    }}
                     textStyle={{
                         fontSize: 12,
                     }}
@@ -160,8 +166,14 @@ export default function Settings() {
                     setValue={setCMValue}
                     setItems={setCustomMoves}
                     containerStyle={styles.dropDown}
-                    style={{ borderColor: "#ccc" }}
-                    dropDownContainerStyle={{ borderColor: "#ccc" }}
+                    style={{
+                        backgroundColor: "#efefef",
+                        borderColor: "#ccc",
+                    }}
+                    dropDownContainerStyle={{
+                        borderColor: "#ccc",
+                        backgroundColor: "#efefef",
+                    }}
                     textStyle={{
                         fontSize: 12,
                     }}
@@ -215,8 +227,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#ccc",
         borderRadius: 4,
-        marginVertical: 10,
+        marginVertical: 2,
         width: "95%",
+        backgroundColor: "#efefef",
     },
 
     optText: {
@@ -238,6 +251,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 10,
         borderColor: "#ccc",
+        backgroundColor: "#efefef",
     },
 
     resetTouchable: {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
     StyleSheet,
     FlatList,
@@ -8,35 +8,43 @@ import {
 } from "react-native";
 import { DataTable } from "react-native-paper";
 
-const removeItemById = (id, data) => {
-    let filtered = [];
-    for (let i = 0; i < data.length; i++) {
-        const item = data[i];
-        if (item.id == id) {
-            if (
-                item.movement != "" &&
-                i + 1 < data.length &&
-                data[i + 1].movement == ""
-            ) {
-                data[i + 1].movement = item.movement;
-            }
-        } else {
-            filtered.push({
-                movement: item.movement,
-                weight: item.weight,
-                reps: item.reps,
-                id: item.id,
-            });
-        }
-    }
-    for (let i = 0; i < filtered.length; i++) {
-        const item = filtered[i];
-        item.id = i;
-    }
-    return filtered;
-};
-
 export default function TodayTable({ data, setTracked, modifyMountStatus }) {
+    const [selected, setSelected] = useState(null);
+
+    useEffect(() => {
+        if (selected != null) {
+            setSelected(null);
+        }
+    }, [data]);
+
+    const removeItemById = (id, data) => {
+        let filtered = [];
+        for (let i = 0; i < data.length; i++) {
+            const item = data[i];
+            if (item.id == id) {
+                if (
+                    item.movement != "" &&
+                    i + 1 < data.length &&
+                    data[i + 1].movement == ""
+                ) {
+                    data[i + 1].movement = item.movement;
+                }
+            } else {
+                filtered.push({
+                    movement: item.movement,
+                    weight: item.weight,
+                    reps: item.reps,
+                    id: item.id,
+                });
+            }
+        }
+        for (let i = 0; i < filtered.length; i++) {
+            const item = filtered[i];
+            item.id = i;
+        }
+        return filtered;
+    };
+
     return (
         <DataTable style={styles.container}>
             <DataTable.Header style={styles.tableHeader}>
@@ -48,26 +56,42 @@ export default function TodayTable({ data, setTracked, modifyMountStatus }) {
                 keyExtractor={(item) => item.id}
                 data={data}
                 renderItem={({ item }) => (
-                    <DataTable.Row>
+                    <DataTable.Row
+                        style={
+                            selected === item.id ? styles.highlightedRow : null
+                        }
+                        onPress={() => {
+                            if (selected === item.id) {
+                                setSelected(null);
+                            } else {
+                                setSelected(item.id);
+                            }
+                        }}
+                    >
                         <DataTable.Cell>{item.movement}</DataTable.Cell>
                         <DataTable.Cell>{item.reps}</DataTable.Cell>
                         <DataTable.Cell>
                             <View style={styles.weightContainer}>
-                                <Text style={{ paddingHorizontal: 25 }}>
+                                <Text style={{ marginRight: 30 }}>
                                     {item.weight}
                                 </Text>
-                                <TouchableHighlight
-                                    onPress={() => {
-                                        setTracked(
-                                            removeItemById(item.id, data)
-                                        );
-                                        modifyMountStatus();
-                                    }}
-                                >
-                                    <View style={styles.button}>
-                                        <Text style={styles.buttonText}>x</Text>
-                                    </View>
-                                </TouchableHighlight>
+                                {selected === item.id && (
+                                    <TouchableHighlight
+                                        onPress={() => {
+                                            setTracked(
+                                                removeItemById(item.id, data)
+                                            );
+                                            modifyMountStatus();
+                                        }}
+                                        style={styles.buttonContainer}
+                                    >
+                                        <View style={styles.button}>
+                                            <Text style={styles.buttonText}>
+                                                x
+                                            </Text>
+                                        </View>
+                                    </TouchableHighlight>
+                                )}
                             </View>
                         </DataTable.Cell>
                     </DataTable.Row>
@@ -82,13 +106,19 @@ const styles = StyleSheet.create({
         padding: 15,
     },
     tableHeader: {
-        backgroundColor: "white",
+        backgroundColor: "#fff",
     },
     weightContainer: {
-        flex: 1,
-        justifyContent: "flex-end",
+        width: 100,
         alignItems: "center",
         flexDirection: "row",
+    },
+    highlightedRow: {
+        backgroundColor: "#efefef",
+    },
+    buttonContainer: {
+        position: "absolute",
+        right: 0,
     },
     button: {
         alignItems: "center",
@@ -97,7 +127,7 @@ const styles = StyleSheet.create({
         elevation: 3,
         backgroundColor: "maroon",
         height: 30,
-        width: 50,
+        width: 30,
     },
     buttonText: {
         fontSize: 15,

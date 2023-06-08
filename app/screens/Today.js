@@ -350,6 +350,14 @@ export default function Today() {
                         setValue={setMoveValue}
                         setItems={setMovement}
                         containerStyle={styles.dropdown}
+                        style={{
+                            backgroundColor: "#efefef",
+                            borderColor: "#ccc",
+                        }}
+                        dropDownContainerStyle={{
+                            borderColor: "#ccc",
+                            backgroundColor: "#efefef",
+                        }}
                         textStyle={{
                             fontSize: 12,
                         }}
@@ -366,6 +374,14 @@ export default function Today() {
                             setValue={setRangeValue}
                             setItems={setRepRange}
                             containerStyle={styles.dropdown}
+                            style={{
+                                backgroundColor: "#efefef",
+                                borderColor: "#ccc",
+                            }}
+                            dropDownContainerStyle={{
+                                backgroundColor: "#efefef",
+                                borderColor: "#ccc",
+                            }}
                             textStyle={{
                                 fontSize: 12,
                             }}
@@ -415,6 +431,10 @@ export default function Today() {
                         layout="row"
                     />
                 </View>
+                <Text style={{ fontSize: 12, margin: 5, marginTop: 0 }}>
+                    (suggested weights appear in "weight" box)
+                </Text>
+
                 <View style={styles.buttonsContainer}>
                     <TouchableHighlight
                         onPress={() => setAlertVisible(true)}
@@ -487,9 +507,9 @@ const styles = StyleSheet.create({
         height: "45%",
         width: "90%",
         margin: 12,
-        borderWidth: 1,
         borderRadius: 5,
         padding: 10,
+        backgroundColor: "#efefef",
     },
     dropdown: {
         marginVertical: 11,
@@ -497,14 +517,14 @@ const styles = StyleSheet.create({
     },
     options: {
         width: "100%",
-        height: "13%",
+        height: "14%",
     },
     RadioButtonContainer: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "flex-start",
         width: "100%",
-        marginVertical: 5,
+        height: "40%",
     },
     buttonsContainer: {
         flexDirection: "row",
@@ -532,7 +552,7 @@ const styles = StyleSheet.create({
         color: "white",
     },
     table: {
-        height: "60%",
+        height: "59%",
         width: "100%",
     },
 });
