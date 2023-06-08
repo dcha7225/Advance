@@ -40,6 +40,9 @@ export default function Today() {
     const [selectedPO, setSelectedPO] = useState("2");
     const [alertVisible, setAlertVisible] = useState(false);
     const [newMove, setNewMove] = useState("");
+    const [statusArr, setStatusArr] = useState([0, 0, 0]);
+    const [submitReq, setSubmitReq] = useState(false);
+    const dataSet = useRef([]);
 
     let today = new Date();
     today =
@@ -48,8 +51,6 @@ export default function Today() {
         (today.getMonth() + 1) +
         "-" +
         today.getDate();
-
-    const dataSet = useRef([]);
 
     const modifyMountStatus = () => {
         firstMount.current = false;
@@ -151,6 +152,33 @@ export default function Today() {
 
         firstMount.current = true;
     }, []);
+
+    useEffect(() => {
+        let newArr = [...statusArr];
+        let changed = false;
+        if (statusArr[0] == 0 && moveValue != null) {
+            newArr[0] = 1;
+            changed = true;
+        } else if (statusArr[0] == 1 && moveValue == null) {
+            newArr[0] = 0;
+            if (!changed) changed = true;
+        }
+        if (statusArr[1] == 0 && reps != "") {
+            newArr[1] = 1;
+            if (!changed) changed = true;
+        } else if (statusArr[1] == 1 && reps == "") {
+            newArr[1] = 0;
+            if (!changed) changed = true;
+        }
+        if (statusArr[2] == 0 && weight != "") {
+            newArr[2] = 1;
+            if (!changed) changed = true;
+        } else if (statusArr[2] == 1 && weight == "") {
+            newArr[2] = 0;
+            if (!changed) changed = true;
+        }
+        if (changed) setStatusArr(newArr);
+    }, [moveValue, reps, weight]);
 
     useEffect(() => {
         handleInt();
@@ -256,6 +284,7 @@ export default function Today() {
     const handleSubmit = async (m, w, r) => {
         let found = false;
         let entered = false;
+
         if (m != null && w != "" && r != "") {
             for (let i = 0; i < tracked.length; i++) {
                 if (!found && tracked[i].movement == m) {
@@ -272,11 +301,7 @@ export default function Today() {
                         ...tracked.slice(i),
                     ]);
                     entered = true;
-                    setMoveOpen(false);
-                    setRangeOpen(false);
-                    onChangeReps("");
-                    onChangeWeight("");
-                    Keyboard.dismiss();
+
                     break;
                 }
                 if (found && i == tracked.length - 1) {
@@ -290,11 +315,6 @@ export default function Today() {
                         },
                     ]);
                     entered = true;
-                    setMoveOpen(false);
-                    setRangeOpen(false);
-                    onChangeReps("");
-                    onChangeWeight("");
-                    Keyboard.dismiss();
                 }
             }
             if (!entered) {
@@ -307,14 +327,22 @@ export default function Today() {
                         id: tracked.length,
                     },
                 ]);
-                setMoveOpen(false);
-                setRangeOpen(false);
-                onChangeReps("");
-                onChangeWeight("");
-                Keyboard.dismiss();
+            }
+            setMoveOpen(false);
+            setRangeOpen(false);
+            onChangeReps("");
+            onChangeWeight("");
+            Keyboard.dismiss();
+
+            firstMount.current = false;
+            if (submitReq != false) {
+                setSubmitReq(false);
+            }
+        } else {
+            if (submitReq != true) {
+                setSubmitReq(true);
             }
         }
-        firstMount.current = false;
     };
 
     const handleNewMoveSubmit = (move) => {
@@ -350,10 +378,18 @@ export default function Today() {
                         setValue={setMoveValue}
                         setItems={setMovement}
                         containerStyle={styles.dropdown}
-                        style={{
-                            backgroundColor: "#efefef",
-                            borderColor: "#ccc",
-                        }}
+                        style={[
+                            {
+                                backgroundColor: "#efefef",
+                                borderColor: "#ccc",
+                            },
+                            statusArr[0] == 0 &&
+                                submitReq == true && {
+                                    borderStyle: "dashed",
+                                    backgroundColor: "rgba(255, 0, 0, 0.1)",
+                                    borderColor: "rgba(255, 0, 0, 0.5)",
+                                },
+                        ]}
                         dropDownContainerStyle={{
                             borderColor: "#ccc",
                             backgroundColor: "#efefef",
@@ -392,7 +428,16 @@ export default function Today() {
 
                 <View style={styles.inputs}>
                     <TextInput
-                        style={styles.inputBox}
+                        style={[
+                            styles.inputBox,
+                            statusArr[1] == 0 &&
+                                submitReq == true && {
+                                    borderWidth: 1,
+                                    backgroundColor: "rgba(255, 0, 0, 0.1)",
+                                    borderStyle: "dashed",
+                                    borderColor: "rgba(255, 0, 0, 0.5)",
+                                },
+                        ]}
                         onChangeText={onChangeReps}
                         value={reps}
                         placeholder="0"
@@ -402,7 +447,16 @@ export default function Today() {
                 </View>
                 <View style={styles.inputs}>
                     <TextInput
-                        style={styles.inputBox}
+                        style={[
+                            styles.inputBox,
+                            statusArr[2] == 0 &&
+                                submitReq == true && {
+                                    borderWidth: 1,
+                                    borderStyle: "dashed",
+                                    backgroundColor: "rgba(255, 0, 0, 0.1)",
+                                    borderColor: "rgba(255, 0, 0, 0.5)",
+                                },
+                        ]}
                         onChangeText={onChangeWeight}
                         value={weight}
                         placeholder={
