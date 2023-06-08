@@ -15,6 +15,7 @@ import RadioGroup from "react-native-radio-buttons-group";
 import Dialog from "react-native-dialog";
 import { MyContext } from "../components/ContextProvider";
 import { getAllKeys, getData, storeData } from "../../AsyncStor";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function Today() {
     const {
@@ -43,6 +44,7 @@ export default function Today() {
     const [statusArr, setStatusArr] = useState([0, 0, 0]);
     const [submitReq, setSubmitReq] = useState(false);
     const dataSet = useRef([]);
+    const isFocused = useIsFocused();
 
     let today = new Date();
     today =
@@ -55,6 +57,12 @@ export default function Today() {
     const modifyMountStatus = () => {
         firstMount.current = false;
     };
+
+    useEffect(() => {
+        if (isFocused && submitReq == true) {
+            setSubmitReq(false);
+        }
+    }, [isFocused]);
 
     const handleInt = () => {
         switch (intValue) {
@@ -382,6 +390,7 @@ export default function Today() {
                             {
                                 backgroundColor: "#efefef",
                                 borderColor: "#ccc",
+                                flex: 1,
                             },
                             statusArr[0] == 0 &&
                                 submitReq == true && {
@@ -473,40 +482,44 @@ export default function Today() {
                     <Text>Weight</Text>
                 </View>
             </View>
-            <View style={styles.options}>
-                <View style={styles.RadioButtonContainer}>
-                    <Text style={{ fontSize: 14, marginLeft: 5 }}>
+            <View style={styles.RadioButtonContainer}>
+                <View
+                    style={{
+                        flex: 1,
+                        marginLeft: 5,
+                    }}
+                >
+                    <Text style={{ fontSize: 14 }}>
                         Suggest Progressive Overload:
                     </Text>
-                    <RadioGroup
-                        radioButtons={radioButtons}
-                        onPress={setSelectedPO}
-                        selectedId={selectedPO}
-                        layout="row"
-                    />
+                    <Text style={{ fontSize: 10.5 }}>
+                        (suggested weights appear in "weight" box)
+                    </Text>
                 </View>
-                <Text style={{ fontSize: 12, margin: 5, marginTop: 0 }}>
-                    (suggested weights appear in "weight" box)
-                </Text>
-
-                <View style={styles.buttonsContainer}>
-                    <TouchableHighlight
-                        onPress={() => setAlertVisible(true)}
-                        style={styles.buttonTouchableContainer}
-                    >
-                        <View style={styles.button}>
-                            <Text style={styles.buttonText}>New Movement</Text>
-                        </View>
-                    </TouchableHighlight>
-                    <TouchableHighlight
-                        onPress={() => handleSubmit(moveValue, weight, reps)}
-                        style={styles.buttonTouchableContainer}
-                    >
-                        <View style={styles.button}>
-                            <Text style={styles.buttonText}>Submit</Text>
-                        </View>
-                    </TouchableHighlight>
-                </View>
+                <RadioGroup
+                    radioButtons={radioButtons}
+                    onPress={setSelectedPO}
+                    selectedId={selectedPO}
+                    layout="row"
+                />
+            </View>
+            <View style={styles.buttonsContainer}>
+                <TouchableHighlight
+                    onPress={() => setAlertVisible(true)}
+                    style={styles.buttonTouchableContainer}
+                >
+                    <View style={styles.button}>
+                        <Text style={styles.buttonText}>New Movement</Text>
+                    </View>
+                </TouchableHighlight>
+                <TouchableHighlight
+                    onPress={() => handleSubmit(moveValue, weight, reps)}
+                    style={styles.buttonTouchableContainer}
+                >
+                    <View style={styles.button}>
+                        <Text style={styles.buttonText}>Submit</Text>
+                    </View>
+                </TouchableHighlight>
             </View>
 
             <View style={styles.table}>
@@ -566,23 +579,20 @@ const styles = StyleSheet.create({
         backgroundColor: "#efefef",
     },
     dropdown: {
-        marginVertical: 11,
+        marginVertical: 12,
         width: "90%",
-    },
-    options: {
-        width: "100%",
-        height: "14%",
+        height: "45%",
     },
     RadioButtonContainer: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "flex-start",
         width: "100%",
-        height: "40%",
+        height: "8%",
     },
     buttonsContainer: {
         flexDirection: "row",
         justifyContent: "center",
+        height: "7%",
     },
     buttonTouchableContainer: {
         alignSelf: "center",
@@ -606,7 +616,7 @@ const styles = StyleSheet.create({
         color: "white",
     },
     table: {
-        height: "59%",
+        height: "58%",
         width: "100%",
     },
 });
