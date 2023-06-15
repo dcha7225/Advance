@@ -29,6 +29,7 @@ export default function Journal() {
                 });
 
                 const data = await Promise.all(dataPromises);
+
                 setDataSet(data);
                 setCurrentIndex(data.length - 1);
             };

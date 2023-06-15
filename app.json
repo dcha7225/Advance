@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "ProLoad",
-    "slug": "ProLoad",
+    "name": "Pro-Load",
+    "slug": "Pro-Load",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./app/assets/proload-squareLogo.png",
