@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "ProLoad",
-    "slug": "ProLoad",
+    "name": "Pro-Load",
+    "slug": "Pro-Load",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./app/assets/proload-squareLogo.png",
@@ -16,7 +16,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.dcha7225.ProLoad"
+      "bundleIdentifier": "com.dcha7225.ProLoad",
+      "buildNumber": "3"
     },
     "android": {
       "adaptiveIcon": {
@@ -29,7 +30,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "81bd0551-0567-4a40-9caf-c49c6c9b7207"
+        "projectId": "dd2765e3-3e64-4b89-a91b-42567287b34d"
       }
     }
   }

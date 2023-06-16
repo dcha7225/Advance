@@ -13,6 +13,12 @@
     "production": {}
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios":{
+        "appleId": "danielcha0131@gmail.com",
+        "ascAppId": "6450328657",
+        "appleTeamId": "P4SU2JYARB"
+      }
+    }
   }
 }
