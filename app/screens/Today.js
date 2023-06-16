@@ -374,7 +374,7 @@ export default function Today() {
         >
             <Image
                 style={styles.logo}
-                source={require("../assets/Advance-Logo.png")}
+                source={require("../assets/Proload-logo.png")}
             />
             <View style={styles.new}>
                 <View style={styles.inputs}>

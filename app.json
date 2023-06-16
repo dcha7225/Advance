@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Advance",
-    "slug": "Advance",
+    "name": "ProLoad",
+    "slug": "ProLoad",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./app/assets/Advance-squareLogo.png",
+    "icon": "./app/assets/proload-squareLogo.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./app/assets/splash.png",
