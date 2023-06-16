@@ -422,6 +422,7 @@ export default function Today() {
                             style={{
                                 backgroundColor: "#efefef",
                                 borderColor: "#ccc",
+                                flex: 1,
                             }}
                             dropDownContainerStyle={{
                                 backgroundColor: "#efefef",
