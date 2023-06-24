@@ -19,7 +19,6 @@ export default function Chart({ dataset, title }) {
         // Log other messages
         originalConsoleLog(message);
     };
-
     return (
         <SafeAreaView>
             <Text
@@ -39,7 +38,6 @@ export default function Chart({ dataset, title }) {
                 showScrollIndicator
                 scrollToEnd
                 scrollAnimation={false}
-                pressEnabled
             />
         </SafeAreaView>
     );
