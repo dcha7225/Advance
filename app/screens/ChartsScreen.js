@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView, View, Text, Alert } from "react-native";
+import { StyleSheet, SafeAreaView, View, Text } from "react-native";
 import Chart from "../components/Chart";
 import { useState, useEffect, useRef, useContext } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -55,7 +55,10 @@ export default function ChartScreen() {
                             curData[y].reps <= rangeValue[1] &&
                             curData[y].reps >= rangeValue[0]
                         ) {
-                            d.push(Number(curData[y].weight));
+                            d.push({
+                                value: Number(curData[y].weight),
+                                dataPointText: String(curData[y].weight),
+                            });
                         }
                         if (y == lastIn || curData[y + 1].movement != "") {
                             break;
@@ -64,21 +67,20 @@ export default function ChartScreen() {
                 }
             }
 
-            for (let i = 0; i < repRange.length; i++) {
-                if (repRange[i].value == rangeValue) {
-                    if (repRange[i].value[1] == 1) {
-                        //checking if 1 rep max
-                        title.current = moveValue.toString() + ": 1 rep max";
-                    } else {
-                        // any other range of reps
-                        title.current =
-                            moveValue.toString() +
-                            ": " +
-                            repRange[i].label +
-                            " reps";
-                    }
-                }
+            if (rangeValue[1] == 1) {
+                //checking if 1 rep max
+                title.current = moveValue.toString() + ": 1 rep max";
+            } else {
+                // any other range of reps
+                title.current =
+                    moveValue.toString() +
+                    ": " +
+                    rangeValue[0] +
+                    "-" +
+                    rangeValue[1] +
+                    " reps";
             }
+
             setCurData(d);
         }
     }, [dataSet, rangeValue, moveValue]);
@@ -86,7 +88,7 @@ export default function ChartScreen() {
         <SafeAreaView style={styles.background}>
             <View style={styles.titleBar}>
                 <Text style={{ fontSize: 18, fontWeight: "600" }}>
-                    Progress
+                    Charting
                 </Text>
             </View>
             <View style={styles.new}>

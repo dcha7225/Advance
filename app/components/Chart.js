@@ -1,39 +1,23 @@
-import { LineChart } from "react-native-chart-kit";
 import { SafeAreaView, Dimensions, Text } from "react-native";
+import { LineChart } from "react-native-gifted-charts";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 export default function Chart({ dataset, title }) {
-    let r;
-    if (dataset.length < 10) {
-        r = "2";
-    } else {
-        r = "0";
-    }
+    const originalConsoleLog = console.log;
 
-    const chartConfig = {
-        backgroundGradientFrom: "#fff",
-        backgroundGradientTo: "#fff",
-        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-        strokeWidth: 2, // optional, default 3
-        barPercentage: 0.5,
-        style: {
-            borderRadius: 16,
-        },
-        propsForDots: {
-            r: r,
-            strokeWidth: "2",
-            stroke: "#ffa726",
-        },
-    };
+    const scrollEventRegex =
+        /You specified `onScroll` on a <ScrollView> but not `scrollEventThrottle`\. You will only receive one event\./;
 
-    const data = {
-        datasets: [
-            {
-                data: dataset,
-            },
-        ],
+    console.log = (message) => {
+        if (scrollEventRegex.test(message)) {
+            // Ignore the scroll event console log
+            return;
+        }
+
+        // Log other messages
+        originalConsoleLog(message);
     };
 
     return (
@@ -44,11 +28,17 @@ export default function Chart({ dataset, title }) {
                 {title}
             </Text>
             <LineChart
-                data={data}
-                width={screenWidth}
-                height={screenHeight * 0.5}
-                chartConfig={chartConfig}
-                //bezier
+                data={dataset}
+                color={"#5f5f5f"}
+                thickness={3}
+                textShiftY={14}
+                textShiftX={10}
+                width={screenWidth * 0.8}
+                height={screenHeight * 0.3}
+                showScrollIndicator
+                scrollToEnd
+                scrollAnimation={false}
+                pressEnabled
             />
         </SafeAreaView>
     );

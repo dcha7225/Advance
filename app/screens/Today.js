@@ -435,26 +435,6 @@ export default function Today() {
                         <Text>Rep Range</Text>
                     </View>
                 )}
-
-                <View style={styles.inputs}>
-                    <TextInput
-                        style={[
-                            styles.inputBox,
-                            statusArr[1] == 0 &&
-                                submitReq == true && {
-                                    borderWidth: 1,
-                                    backgroundColor: "rgba(255, 0, 0, 0.1)",
-                                    borderStyle: "dashed",
-                                    borderColor: "rgba(255, 0, 0, 0.5)",
-                                },
-                        ]}
-                        onChangeText={onChangeReps}
-                        value={reps}
-                        placeholder="0"
-                        keyboardType="numeric"
-                    />
-                    <Text>Reps</Text>
-                </View>
                 <View style={styles.inputs}>
                     <TextInput
                         style={[
@@ -481,6 +461,25 @@ export default function Today() {
                         keyboardType="numeric"
                     />
                     <Text>Weight</Text>
+                </View>
+                <View style={styles.inputs}>
+                    <TextInput
+                        style={[
+                            styles.inputBox,
+                            statusArr[1] == 0 &&
+                                submitReq == true && {
+                                    borderWidth: 1,
+                                    backgroundColor: "rgba(255, 0, 0, 0.1)",
+                                    borderStyle: "dashed",
+                                    borderColor: "rgba(255, 0, 0, 0.5)",
+                                },
+                        ]}
+                        onChangeText={onChangeReps}
+                        value={reps}
+                        placeholder="0"
+                        keyboardType="numeric"
+                    />
+                    <Text>Reps</Text>
                 </View>
             </View>
             <View style={styles.RadioButtonContainer}>
