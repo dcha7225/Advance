@@ -351,6 +351,37 @@ export default function Today() {
                 setSubmitReq(true);
             }
         }
+
+        storeData(today, [
+            { movement: "Bench Press", weight: "135", reps: "5", id: 0 },
+            { movement: "", weight: "135", reps: "8", id: 1 },
+            { movement: "", weight: "135", reps: "8", id: 2 },
+            { movement: "", weight: "135", reps: "6", id: 3 },
+            { movement: "Squat", weight: "225", reps: "5", id: 4 },
+            { movement: "", weight: "235", reps: "5", id: 5 },
+            { movement: "", weight: "260", reps: "8", id: 6 },
+            { movement: "Deadlift", weight: "315", reps: "5", id: 9 },
+            { movement: "", weight: "315", reps: "5", id: 7 },
+            { movement: "", weight: "335", reps: "8", id: 8 },
+        ]);
+        storeData("2023-06-20", [
+            { movement: "Bench Press", weight: "110", reps: "6", id: 0 },
+            { movement: "", weight: "110", reps: "8", id: 1 },
+            { movement: "", weight: "105", reps: "8", id: 2 },
+            { movement: "", weight: "100", reps: "10", id: 3 },
+            { movement: "Shoulder Press", weight: "50", reps: "5", id: 4 },
+            { movement: "", weight: "55", reps: "8", id: 5 },
+            { movement: "", weight: "55", reps: "8", id: 6 },
+            { movement: "Lat Raises", weight: "30", reps: "10", id: 9 },
+            { movement: "", weight: "30", reps: "9", id: 7 },
+            { movement: "", weight: "25", reps: "11", id: 8 },
+        ]);
+        storeData("2023-06-19", [
+            { movement: "Bench Press", weight: "145", reps: "6", id: 0 },
+            { movement: "", weight: "110", reps: "8", id: 1 },
+            { movement: "", weight: "115", reps: "8", id: 2 },
+            { movement: "", weight: "100", reps: "6", id: 3 },
+        ]);
     };
 
     const handleNewMoveSubmit = (move) => {

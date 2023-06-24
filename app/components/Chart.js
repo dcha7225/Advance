@@ -29,7 +29,8 @@ export default function Chart({ dataset, title }) {
             </Text>
             <LineChart
                 data={dataset}
-                color={"#5f5f5f"}
+                color={"#cacacaf2"}
+                textColor={"black"}
                 thickness={3}
                 textShiftY={14}
                 textShiftX={10}
