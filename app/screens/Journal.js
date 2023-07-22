@@ -21,7 +21,9 @@ export default function Journal() {
         if (isFocused) {
             const loadData = async () => {
                 let allKeys = await getAllKeys();
-                allKeys = allKeys.filter((item) => item !== "movements");
+                allKeys = allKeys.filter(
+                    (item) => item !== "movements" && item !== "tutorial"
+                );
                 allKeys.sort((a, b) => new Date(a) - new Date(b));
                 const dataPromises = allKeys.map(async (key) => {
                     const curData = await getData(key);

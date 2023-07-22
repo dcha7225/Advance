@@ -139,7 +139,7 @@ export default function Today() {
             allKeys.sort((a, b) => new Date(a) - new Date(b));
             const curData = [];
             for (const key of allKeys) {
-                if (key != "movements") {
+                if (key != "movements" && key != "tutorial") {
                     const d = await getData(key);
                     curData.push({ data: d, date: key });
                 }

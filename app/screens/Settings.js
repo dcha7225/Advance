@@ -15,6 +15,8 @@ import { MyContext } from "../components/ContextProvider";
 import { useIsFocused } from "@react-navigation/native";
 import { errorAlert } from "../../AsyncStor";
 
+import { storeData } from "../../AsyncStor";
+
 export default function Settings() {
     const {
         setTracked,
@@ -96,6 +98,18 @@ export default function Settings() {
                 },
             ]
         );
+    const handleTutorial = () => {
+        storeData("tutorial", []);
+        Alert.alert(
+            "Note:",
+            "Please reload your application for tutorial to load.",
+            [
+                {
+                    text: "Ok",
+                },
+            ]
+        );
+    };
 
     const dismissKeyboard = () => {
         Keyboard.dismiss();
@@ -153,6 +167,18 @@ export default function Settings() {
                     placeholder="0 lbs"
                     keyboardType="numeric"
                 />
+            </View>
+
+            <View style={styles.inputs}>
+                <Text style={styles.optText}> View tutorial </Text>
+                <TouchableHighlight
+                    onPress={() => handleTutorial()}
+                    style={styles.resetTouchable}
+                >
+                    <View style={styles.button}>
+                        <Text style={styles.buttonText}>Tutorial</Text>
+                    </View>
+                </TouchableHighlight>
             </View>
 
             <View style={[styles.inputs, { zIndex: 1 }]}>
